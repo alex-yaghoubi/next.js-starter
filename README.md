@@ -1,103 +1,126 @@
 # create-nextjs-standard-app
 
-[![npm version](https://img.shields.io/npm/v/create-nextjs-standard-app?label=npm)](https://www.npmjs.com/package/create-nextjs-standard-app)
-[![npm weekly downloads](https://img.shields.io/npm/dw/create-nextjs-standard-app?label=weekly%20downloads)](https://www.npmjs.com/package/create-nextjs-standard-app)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![npm](https://img.shields.io/npm/v/create-nextjs-standard-app?label=npm)](https://www.npmjs.com/package/create-nextjs-standard-app)
+[![npm downloads](https://img.shields.io/npm/dw/create-nextjs-standard-app?label=weekly%20downloads)](https://www.npmjs.com/package/create-nextjs-standard-app)
+[![MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**A Next.js application scaffolder** with TypeScript, Tailwind CSS,
-English/Persian localization, RTL layouts, a theme switcher, and example
-authentication/appointment screens.
+**Go from zero to a usable Next.js application in one command.**
+The new default starter includes **Next.js 15, React 19, TypeScript, Tailwind CSS,
+English/Persian routing, RTL support and dark mode**, without requiring a
+database, an API key or an authentication provider.
 
-[npm package](https://www.npmjs.com/package/create-nextjs-standard-app) ·
-[GitHub source](https://github.com/alex-yaghoubi/next.js-starter) ·
-[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Releasing](RELEASING.md)
+[Published package on npm](https://www.npmjs.com/package/create-nextjs-standard-app) ·
+[Source](https://github.com/alex-yaghoubi/next.js-starter) ·
+[Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Release notes](RELEASING.md)
 
-> **Release status:** The fixes and new CLI options in `main` are development
-> changes intended for the **next npm release**. Until that version is published,
-> `npx` installs the existing npm release, which may not include these changes.
-> See the [changelog](CHANGELOG.md) for the source-versus-release distinction.
+> **Important release distinction:** The redesigned **2.0.0** source is on
+> GitHub `main` but **has not been published on npm**. The published npm
+> version may still generate the older template. The instructions below
+> describe the planned v2 behavior; don't claim they work from `npx` until
+> the release is published and validated.
 
-## Quick start
+## Quick start (v2, after publication)
 
-**Requirements:** Node.js 20.9+ and npm, yarn, or pnpm.
+Node.js **20.9+** required.
 
 ```bash
-npx create-nextjs-standard-app my-project
-cd my-project
+npx create-nextjs-standard-app my-app
+cd my-app
 npm run dev
 ```
 
-## CLI options in the current source
+Open **http://localhost:3000**. The app redirects to `/en`; switch to
+فارسی to see real RTL routing and translations at `/fa`.
+
+That's it. The generator installs your dependencies and initializes Git by
+default. No environment variables, API services or database configuration
+are required for the default template.
+
+## Choose a template
+
+| Template | Command option | Intended for |
+| --- | --- | --- |
+| **Basic (default)** | `--template basic` | New projects; clean Next.js, i18n, theme toggle |
+| **Appointment (optional)** | `--template appointment` | Existing legacy appointment UI/auth integration example |
+
+```bash
+# New multilingual app
+npx create-nextjs-standard-app my-app
+
+# Preserve the earlier, appointment-oriented template
+npx create-nextjs-standard-app booking-app --template appointment
+
+# Scaffold without installing packages, or choose pnpm
+npx create-nextjs-standard-app demo --skip-install --no-git
+npx create-nextjs-standard-app demo --pm pnpm
+```
+
+The optional Appointment template is **an integration example, not a
+production-ready app**. It requires backend configuration, authentication
+review, and your own API.
+
+## What the basic template includes
+
+- **App Router** with localized `app/[locale]/` pages
+- **TypeScript** and a clean `tsconfig.json`
+- **Tailwind CSS** with responsive default styles
+- **English and Persian translations** in `messages/en.json` and
+  `messages/fa.json`, using `next-intl`
+- **RTL / LTR** page direction driven by the active locale
+- **Light/dark toggle**, respecting system preferences via `next-themes`
+- **A usable starter homepage** and practical editing instructions
+- No app-specific fonts, branding, appointment APIs, shared secrets, Docker
+  registry, or deployment provider required
+
+## Customize the generated project
+
+| Change | File |
+| --- | --- |
+| Replace homepage | `app/[locale]/page.tsx` |
+| Rename website / metadata | `messages/en.json`, `messages/fa.json` |
+| Change layout and header | `app/[locale]/layout.tsx` |
+| Update colors and styles | `app/globals.css`, `tailwind.config.ts` |
+| Change supported languages | `i18n/routing.ts` |
+| Add routes | `app/[locale]/your-route/page.tsx` |
+
+The created project has its own [README](starter-basic/README.md)
+with run, typecheck, build, localization, and theme instructions.
+
+## CLI options (v2 source)
 
 | Option | Purpose |
 | --- | --- |
-| `--pm npm\|yarn\|pnpm` | Choose the installer (default: npm) |
-| `--no-git` | Skip initializing a Git repository |
-| `--skip-install` | Generate source files without installing packages |
-| `--help` | Show supported CLI options |
+| `--template basic\|appointment` | Choose default or legacy starter |
+| `--pm npm\|yarn\|pnpm` | Choose package manager (npm by default) |
+| `--skip-install` | Generate files now, install later |
+| `--no-git` | Skip automatic Git repository initialization |
+| `--help` | Display available options |
 
-For example, generate the project without installing dependencies:
+The generator refuses to overwrite an existing folder and personalizes
+the generated `package.json` name. With the Appointment template, it also
+creates a unique `NEXTAUTH_SECRET` in a git-ignored `.env.local`. The
+default Basic template does **not** create or require an auth secret.
 
-```bash
-npx create-nextjs-standard-app my-project --skip-install --no-git
-```
-
-The generator creates `my-project/`, personalizes the package name and
-generates an individual `NEXTAUTH_SECRET` in a git-ignored `.env.local`.
-For yarn and pnpm, it removes the npm template lockfile so the selected
-package manager can manage dependencies.
-
-## What's inside?
-
-- Next.js App Router, TypeScript, and Tailwind CSS
-- English and Persian messages with `next-intl` and RTL awareness
-- Theme switcher and reusable UI components
-- Sample authentication and appointment UI and integrations
-- Optional standalone Next.js Dockerfile (npm-based)
-
-**Example code is not production-ready.** Some app-specific styling/assets
-remain in the sample template; replace them with your own branding.
-The sample auth and appointment flows need an API you own and a separate
-security review before use with real users.
-
-## Security defaults
-
-- A new random authentication secret is generated for every scaffolded project.
-- `.env.local` is excluded from Git and Docker build context.
-- `.env.example` documents environment settings without bundling a shared secret.
-- The sample backend has **no configured production endpoint** by default.
-- No private deployment pipeline or internal container registry is included.
-- The CLI refuses to overwrite an existing directory.
-
-See the [template setup guide](starter-template/README.md) for backend setup.
-Report security issues privately according to [SECURITY.md](SECURITY.md).
-
-## Development and verification
+## Develop and validate the package
 
 ```bash
 npm ci
 npm test
 npm pack --dry-run
-```
 
-The test suite covers CLI behavior, generated package metadata, secret
-isolation, dependency/lock consistency, and package contents.
-
-To optionally validate the Next.js build, use **Actions → Manual package
-validation → Run workflow**, or locally run:
-
-```bash
-cd starter-template
-npm ci
+# Test the no-config application independently
+cd starter-basic
+npm install
+npm run typecheck
 npm run build
 ```
 
-This GitHub Actions workflow is **manual only**. It does not gate commits,
-deployment, merges, or npm publishing. Its results must be checked before
-treating the pending source release as validated.
+A **manual-only**, opt-in GitHub Actions workflow supports source, packaged
+CLI and basic-template validation. It does **not** block commits, PRs,
+deployment or publication; tests are not claimed to pass until actually run.
 
-## Maintainer and license
+**Security:** see [SECURITY.md](SECURITY.md).
+**Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md).
+**Publishing:** maintainer-only process in [RELEASING.md](RELEASING.md).
 
-Maintained by [Alex Yaghoubi](https://github.com/alex-yaghoubi).
-Licensed under the [MIT License](LICENSE). For bugs, features, or pull
-requests, see [Contributing](CONTRIBUTING.md).
+MIT license © Alex Yaghoubi and contributors.

@@ -3,7 +3,24 @@
 Significant source changes are recorded here. A version listed as
 **Unreleased** is not available from npm until the maintainer publishes it.
 
-## [Unreleased] — planned 1.3.5
+## [Unreleased] — planned 2.0.0
+
+### Breaking change
+
+- A new clean, zero-config `basic` template is now the **default**.
+- The previous Appointment-oriented template remains accessible with
+  `--template appointment` for users of the original workflow.
+
+### New basic template
+
+- Next.js App Router with English/Persian routes and RTL-aware layout.
+- Responsive landing page with a practical getting-started section.
+- Tailwind CSS 3, TypeScript, `next-intl`, and `next-themes`.
+- No backend, database, auth provider, environment variable, or third-party
+  font dependency required to run the basic template.
+- Expanded CLI checks verifying template selection and output files.
+
+### Additional hardening originally prepared for 1.3.5
 
 ### Changed
 

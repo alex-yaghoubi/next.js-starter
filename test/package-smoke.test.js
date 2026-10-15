@@ -62,7 +62,7 @@ test("CLI generates a complete project without installing dependencies", (t) => 
   const secret = envLocal.match(/^NEXTAUTH_SECRET=(.+)$/m)?.[1];
   assert.ok(secret && secret.length >= 40, "a strong unique auth secret must be generated");
   assert.match(envLocal, /^NEXTAUTH_URL=http:\/\/localhost:3000$/m);
-  assert.match(fs.readFileSync(path.join(generated, ".gitignore"), "utf8"), /\.env\*\.local/);
+  assert.match(fs.readFileSync(path.join(generated, ".gitignore"), "utf8"), /^\.env\.\*$/m);
   assert.ok(fs.existsSync(path.join(generated, ".env.example")));
 });
 

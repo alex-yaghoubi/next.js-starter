@@ -1,21 +1,26 @@
 name: Manual package validation
 
-# Deliberately manual-only: not a required check and does not block commits or deployment.
+# Intentionally manual-only. Does not gate commits, merges or deployments.
 on:
   workflow_dispatch:
     inputs:
       build_template:
-        description: Also install and build the generated Next.js template
+        description: Install and build the zero-config basic template
         type: boolean
         required: false
         default: true
+      build_appointment:
+        description: Optionally attempt a build of the legacy appointment example
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
 
 jobs:
   cli-smoke:
-    name: CLI smoke tests / package contents
+    name: CLI smoke tests and packed-consumer test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,22 +32,24 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Run CLI tests
         run: npm test
-      - name: Inspect npm package
+      - name: Inspect npm contents
         run: npm pack --dry-run
-      - name: Smoke-test installed tarball as a new consumer
+      - name: Test npm tarball in an isolated consumer
         run: |
           archive=$(npm pack --silent)
           consumer=$(mktemp -d)
           npm install --prefix "$consumer" "$GITHUB_WORKSPACE/$archive" --ignore-scripts --no-audit --no-fund
           cd "$consumer"
-          ./node_modules/.bin/create-nextjs-standard-app sample-consumer --skip-install --no-git
-          test -f sample-consumer/package.json
-          test -f sample-consumer/.env.local
-          test -f sample-consumer/.gitignore
+          ./node_modules/.bin/create-nextjs-standard-app sample-app --skip-install --no-git
+          test -f 'sample-app/app/[locale]/page.tsx'
+          test -f sample-app/messages/fa.json
+          test ! -f sample-app/.env.local
+          test -f sample-app/.gitignore
+          ./node_modules/.bin/create-nextjs-standard-app booking-demo --template appointment --skip-install --no-git
+          test -f booking-demo/.env.local
 
-
-  template-build:
-    name: Optional Next.js template build
+  basic-build:
+    name: Basic starter typecheck and Next.js build
     if: inputs.build_template
     runs-on: ubuntu-latest
     steps:
@@ -50,12 +57,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install template dependencies
+      - name: Install basic starter
+        working-directory: starter-basic
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        working-directory: starter-basic
+        run: npm run typecheck
+      - name: Build Next.js basic starter
+        working-directory: starter-basic
+        run: npm run build
+
+  appointment-build:
+    name: Optional legacy Appointment template build
+    if: inputs.build_appointment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install legacy template
         working-directory: starter-template
         run: npm ci --no-audit --no-fund
-      - name: Generate ephemeral test secret
+      - name: Generate ephemeral local auth secret
         run: node -e 'process.stdout.write("NEXTAUTH_SECRET=" + require("node:crypto").randomBytes(32).toString("hex") + "\n")' >> "$GITHUB_ENV"
-      - name: Build Next.js starter
+      - name: Build example
         working-directory: starter-template
         env:
           NEXTAUTH_URL: http://localhost:3000

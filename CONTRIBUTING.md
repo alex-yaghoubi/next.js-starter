@@ -19,7 +19,13 @@ template are welcome.
 npm ci
 npm test
 npm pack --dry-run
-cd starter-template
+cd starter-basic
+npm install
+npm run typecheck
+npm run build
+
+# Optional legacy appointment-template validation:
+cd ../starter-template
 npm ci
 npm run build
 ```

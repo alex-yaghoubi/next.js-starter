@@ -10,14 +10,18 @@ do **not** automatically publish or update the version on npm.
 2. In GitHub, run **Actions → Manual package validation → Run workflow**
    with **build_template** enabled. Review **both** job results.
 3. Confirm `npm ci`, `npm test`, `npm pack --dry-run`, and the
-   generated template's `npm run build` pass.
+   **default basic template** `npm run typecheck` and `npm run build` pass.
+   The new default template is a breaking change and requires a
+   **2.0.0 major-version release**.
 4. Review all bundled files with `npm pack --dry-run --json`; avoid shipping
    secrets, internal endpoints, or organization-specific deployment configs.
 5. Verify rights to redistribute any third-party fonts and other assets
-   bundled in `starter-template` (code's MIT license does not grant rights
-   to separately licensed assets).
+   bundled in the optional `starter-template` Appointment example. The basic
+   template ships no proprietary font assets; MIT licensing of code alone
+   does not grant rights to third-party assets.
 6. Review relevant security advisories and dependency issues.
-7. Update `CHANGELOG.md` from **Unreleased** to the intended version/date.
+7. Confirm the basic template is the default and `--template appointment` remains available.
+8. Update `CHANGELOG.md` from **Unreleased** to the intended version/date.
 
 ## Publish manually with the authorized npm account
 
