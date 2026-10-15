@@ -123,7 +123,8 @@
     "added": "Task added.",
     "deleted": "Task deleted.",
     "updated": "Task updated.",
-    "invalidSavedData": "Saved workspace data is invalid; it has not been overwritten. You can import a valid backup."
+    "invalidSavedData": "Saved workspace data is invalid; it has not been overwritten. You can import a valid backup.",
+    "showing": "Showing {count} of {total} tasks"
   },
   "Guide": {
     "eyebrow": "DEVELOPER GUIDE",
