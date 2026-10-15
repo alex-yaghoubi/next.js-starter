@@ -459,3 +459,26 @@ test("appointment example contains no obsolete placeholder actions or unused net
     assert.ok(fs.existsSync(path.join(templateDir, "components", "ui", file)));
   }
 });
+
+
+test("appointment application imports only retained UI primitives", () => {
+  const base = path.join(root, "starter-template");
+  const uiRoot = path.join(base, "components", "ui");
+  const scan = (dir) => {
+    for (const item of fs.readdirSync(dir, {withFileTypes: true})) {
+      const full = path.join(dir, item.name);
+      if (item.isDirectory()) {
+        scan(full);
+      } else if (item.isFile() && /\.(?:ts|tsx)$/.test(item.name)) {
+        const source = fs.readFileSync(full, "utf8");
+        for (const found of source.matchAll(/@\/components\/ui\/([A-Za-z0-9_-]+)/g)) {
+          assert.ok(fs.existsSync(path.join(uiRoot, found[1] + ".tsx")),
+            path.relative(base, full) + " imports missing UI component " + found[1]);
+        }
+      }
+    }
+  };
+  scan(path.join(base, "app"));
+  scan(path.join(base, "components", "client"));
+  scan(path.join(base, "components", "server"));
+});

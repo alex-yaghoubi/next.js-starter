@@ -8,8 +8,11 @@ do **not** automatically publish or update the version on npm.
 1. Confirm that `main` contains the intended change and the package version
    is new relative to `npm view create-nextjs-standard-app version`.
 2. In GitHub, run **Actions → Manual package validation → Run workflow**
-   with **build_template** enabled. Review **both** job results.
-3. Confirm `npm ci`, `npm test`, `npm pack --dry-run`, and the
+   with **build_template** and **test_matrix** enabled. Review the CLI
+   smoke test, basic app build, and **all six matrix combinations**.
+   Optionally enable **build_appointment** to validate the legacy example;
+   none of these jobs are required checks or deployment gates.
+3. Confirm `npm ci`, `npm test`, `npm pack --dry-run`, each matrix build, and the
    **default basic template** `npm run typecheck` and `npm run build` pass.
    The new default template is a breaking change and requires a
    **2.0.0 major-version release**. Also verify that both /en and /fa
@@ -19,7 +22,9 @@ do **not** automatically publish or update the version on npm.
 5. Confirm `npm pack --dry-run --json` excludes former third-party font
    binaries from the optional Appointment template. Review rights to any
    other assets, and ensure packaged files contain no proprietary material.
-6. Review relevant security advisories and dependency issues.
+6. Confirm the optional Appointment example still scaffolds and includes all
+   seven UI primitives required by auth forms; check its own build before claiming
+   it production-ready. Review relevant dependency/security advisories.
 7. Confirm the basic template is the default and `--template appointment` remains available.
 8. Update `CHANGELOG.md` from **Unreleased** to the intended version/date.
 

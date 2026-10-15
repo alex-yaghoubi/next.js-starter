@@ -117,7 +117,11 @@ npm run build
 ```
 
 A **manual-only**, opt-in GitHub Actions workflow supports source, packaged
-CLI, basic-template build, and real HTTP smoke tests for English/Persian pages. It does **not** block commits, PRs,
+CLI, basic-template build, real HTTP smoke tests for English/Persian pages,
+and a **six-combination compatibility matrix**: Node 20/22 × npm, pnpm, Yarn.
+Each matrix case installs the published-format tarball in a clean consumer,
+scaffolds the app, installs dependencies, and runs TypeScript and Next.js build.
+The optional Appointment example retains only seven actively used UI primitives. It does **not** block commits, PRs,
 deployment or publication; tests are not claimed to pass until actually run.
 
 **Security:** see [SECURITY.md](SECURITY.md).

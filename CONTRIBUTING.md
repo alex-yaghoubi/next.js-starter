@@ -34,6 +34,13 @@ The template build checks are separate from the CLI smoke tests. Some
 appointment/authentication screens are examples and require a backend you
 control before they can be exercised end to end.
 
+## Cross-environment verification
+
+For CLI or dependency changes, the maintainer can run **Actions → Manual
+package validation** with `test_matrix` enabled. This runs Node.js 20 and 22
+with npm, pnpm and Yarn against an installed npm tarball, followed by typecheck
+and build. It is opt-in and does not create a required status check.
+
 ## Submitting a change
 
 - Make the change in a feature branch and open a pull request.
