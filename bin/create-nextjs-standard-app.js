@@ -86,7 +86,7 @@ async function run() {
     if (argv.template === "basic") {
       const displayName = name
         .replace(/[-_.]+/g, " ")
-        .replace(/\\b[a-z]/g, (letter) => letter.toUpperCase())
+        .replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
         .trim();
       for (const locale of ["en", "fa"]) {
         const messagePath = path.join(targetDir, "messages", locale + ".json");
