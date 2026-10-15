@@ -1,16 +1,21 @@
 name: Manual package validation
 
-# Intentionally manual-only. Does not gate commits, merges or deployments.
+# Opt-in only: no push, pull_request, publish, deploy or required-status triggers.
 on:
   workflow_dispatch:
     inputs:
       build_template:
-        description: Install and build the zero-config basic template
+        description: Build and test the default basic starter on Node 22
+        type: boolean
+        required: false
+        default: true
+      test_matrix:
+        description: Test Node 20/22 x npm/pnpm/Yarn with an installed CLI
         type: boolean
         required: false
         default: true
       build_appointment:
-        description: Optionally attempt a build of the legacy appointment example
+        description: Optionally build the legacy Appointment example
         type: boolean
         required: false
         default: false
@@ -35,7 +40,9 @@ jobs:
       - name: Inspect npm contents
         run: npm pack --dry-run
       - name: Test npm tarball in an isolated consumer
+        shell: bash
         run: |
+          set -euo pipefail
           archive=$(npm pack --silent)
           consumer=$(mktemp -d)
           npm install --prefix "$consumer" "$GITHUB_WORKSPACE/$archive" --ignore-scripts --no-audit --no-fund
@@ -48,8 +55,48 @@ jobs:
           ./node_modules/.bin/create-nextjs-standard-app booking-demo --template appointment --skip-install --no-git
           test -f booking-demo/.env.local
 
+  compatibility-matrix:
+    name: Node ${{ matrix.node }} / ${{ matrix.manager }}
+    if: inputs.test_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+        manager: [npm, pnpm, yarn]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install CLI and selected package manager
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          case '${{ matrix.manager }}' in
+            pnpm) npm install --global pnpm@9.15.9 --no-audit --no-fund ;;
+            yarn) npm install --global yarn@1.22.22 --no-audit --no-fund ;;
+          esac
+      - name: Install npm tarball and scaffold real consumer project
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive=$(npm pack --silent)
+          consumer=$(mktemp -d)
+          npm install --prefix "$consumer" "$GITHUB_WORKSPACE/$archive" --ignore-scripts --no-audit --no-fund
+          cd "$consumer"
+          ./node_modules/.bin/create-nextjs-standard-app matrix-app --pm '${{ matrix.manager }}' --no-git
+          test -d matrix-app/node_modules
+          test -f matrix-app/package.json
+          test -f 'matrix-app/app/[locale]/page.tsx'
+          test ! -f matrix-app/.env.local
+          cd matrix-app
+          ./node_modules/.bin/tsc --noEmit
+          ./node_modules/.bin/next build
+
   basic-build:
-    name: Basic starter typecheck and Next.js build
+    name: Basic starter typecheck and localized HTTP build
     if: inputs.build_template
     runs-on: ubuntu-latest
     steps:
@@ -70,6 +117,7 @@ jobs:
         working-directory: starter-basic
         shell: bash
         run: |
+          set -euo pipefail
           npm run start -- --port 3100 > /tmp/nextjs-starter-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
@@ -84,7 +132,7 @@ jobs:
           grep -q 'dir="rtl"' /tmp/starter-fa.html
           grep -q 'Build something great' /tmp/starter-en.html
           grep -q 'ایده' /tmp/starter-fa.html
-          echo "Localized HTTP smoke test passed"
+          echo 'Localized HTTP smoke test passed'
 
   appointment-build:
     name: Optional legacy Appointment template build
