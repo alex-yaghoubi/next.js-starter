@@ -2,8 +2,8 @@
 # Users of yarn or pnpm should adapt the install/build steps to their package manager.
 FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+COPY package*.json ./
+RUN npm install --no-audit --no-fund
 
 FROM node:22-alpine AS builder
 WORKDIR /app

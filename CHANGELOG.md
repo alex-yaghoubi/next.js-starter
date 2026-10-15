@@ -21,6 +21,8 @@ Significant source changes are recorded here. A version listed as
   font dependency required to run the basic template.
 - Remove unattributed third-party font binaries from the optional Appointment
   template too; use system font stacks instead.
+- Remove the obsolete pinned Appointment lockfile and use patched Next.js/React
+  minimums so new installs do not inherit insecure dependency snapshots.
 - Expanded CLI checks verifying template selection and output files.
 - Manual GitHub Action checks real HTTP responses from /en and /fa after a build.
 

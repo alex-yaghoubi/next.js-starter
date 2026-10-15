@@ -15,6 +15,13 @@ npm run dev
 
 Open http://localhost:3000.
 
+## Dependency compatibility
+
+This optional example no longer ships its old `package-lock.json` (which held
+outdated framework versions). Run `npm install` first to generate a new lockfile
+using security-patched Next.js and React versions. You can use `npm ci` afterward
+once the generated lockfile exists.
+
 ## Configuration and security
 
 - `.env.local` is ignored by Git. Do not commit it.

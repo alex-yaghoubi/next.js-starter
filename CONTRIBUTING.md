@@ -26,7 +26,7 @@ npm run build
 
 # Optional legacy appointment-template validation:
 cd ../starter-template
-npm ci
+npm install
 npm run build
 ```
 

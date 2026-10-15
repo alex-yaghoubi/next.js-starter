@@ -36,6 +36,7 @@ test("npm tarball includes both the CLI and the starter template", () => {
   assert.ok(files.has("starter-basic/package.json"), "basic starter missing from npm package");
   assert.ok(files.has("starter-basic/messages/fa.json"), "basic localization missing");
   assert.ok(!files.has("starter-template/.env"), "shared .env must not ship");
+  assert.ok(!files.has("starter-template/package-lock.json"), "stale legacy lockfile must not ship");
   assert.ok(![...files].some((item) => item.startsWith("starter-template/assets/fonts/")),
     "unlicensed font binaries must not be redistributed");
 });
@@ -81,18 +82,15 @@ test("CLI rejects paths outside the current directory", (t) => {
 });
 
 
-test("starter manifest and lockfile stay in sync", () => {
-  const starterPackage = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
-  const starterLock = JSON.parse(fs.readFileSync(path.join(templateDir, "package-lock.json"), "utf8"));
-  const lockedRoot = starterLock.packages[""];
-
-  assert.deepEqual(lockedRoot.dependencies, starterPackage.dependencies);
-  assert.deepEqual(lockedRoot.devDependencies, starterPackage.devDependencies);
-  assert.equal(starterPackage.dependencies["react-table"], undefined,
-    "legacy react-table does not support React 19");
-  assert.equal(starterPackage.dependencies["@types/react-table"], undefined);
-  assert.equal(starterLock.packages["node_modules/react-table"], undefined);
-  assert.equal(starterLock.packages["node_modules/@types/react-table"], undefined);
+test("legacy appointment template avoids vulnerable frozen dependencies", () => {
+  const legacy = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
+  assert.equal(legacy.dependencies.next, "^15.5.28");
+  assert.equal(legacy.dependencies.react, "^19.1.8");
+  assert.equal(legacy.dependencies["react-dom"], "^19.1.8");
+  assert.equal(legacy.dependencies["react-table"], undefined);
+  assert.equal(legacy.dependencies["@types/react-table"], undefined);
+  assert.ok(!fs.existsSync(path.join(templateDir, "package-lock.json")),
+    "a lockfile with stale Next.js versions must not be distributed");
 });
 
 
@@ -139,7 +137,7 @@ test("verification never assumes that the backend returns a plaintext password",
 });
 
 
-test("scaffolded npm project has the requested package name and lockfile", (t) => {
+test("scaffolded appointment project uses the requested name without a stale lockfile", (t) => {
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-names-"));
   t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
   execFileSync(process.execPath, [binPath, "MySample", "--template", "appointment", "--skip-install", "--no-git"], {
@@ -147,11 +145,9 @@ test("scaffolded npm project has the requested package name and lockfile", (t) =
   });
   const dir = path.join(sandbox, "MySample");
   const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8"));
-  const lock = JSON.parse(fs.readFileSync(path.join(dir, "package-lock.json"), "utf8"));
   assert.equal(pkg.name, "mysample");
-  assert.equal(lock.name, pkg.name);
-  assert.equal(lock.packages[""].name, pkg.name);
-  assert.deepEqual(lock.packages[""].dependencies, pkg.dependencies);
+  assert.ok(!fs.existsSync(path.join(dir, "package-lock.json")),
+    "npm install should generate a fresh lockfile using patched versions");
 });
 
 test("yarn consumers do not inherit npm lockfile", (t) => {
@@ -185,13 +181,11 @@ test("an existing directory is never overwritten", (t) => {
   assert.equal(fs.readFileSync(path.join(target, "important.txt"), "utf8"), "untouched");
 });
 
-test("template pins compatible Next.js and React majors", () => {
+test("legacy template uses patched Next.js and React major versions", () => {
   const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
-  const lock = JSON.parse(fs.readFileSync(path.join(templateDir, "package-lock.json"), "utf8"));
-  assert.equal(pkg.dependencies.next, "^15.3.0");
-  assert.equal(pkg.dependencies.react, "^19.1.0");
-  assert.equal(pkg.dependencies["react-dom"], "^19.1.0");
-  assert.equal(lock.packages[""].dependencies.next, pkg.dependencies.next);
+  assert.equal(pkg.dependencies.next, "^15.5.28");
+  assert.equal(pkg.dependencies.react, "^19.1.8");
+  assert.equal(pkg.dependencies["react-dom"], "^19.1.8");
 });
 
 

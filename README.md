@@ -56,7 +56,8 @@ npx create-nextjs-standard-app demo --pm pnpm
 ```
 
 The optional Appointment template is **an integration example, not a
-production-ready app**. It requires backend configuration, authentication
+production-ready app**. It generates a fresh npm lockfile during installation,
+not the obsolete framework lockfile from the original source. It requires backend configuration, authentication
 review, and your own API.
 
 ## What the basic template includes

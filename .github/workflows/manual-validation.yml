@@ -97,7 +97,7 @@ jobs:
           node-version: '22'
       - name: Install legacy template
         working-directory: starter-template
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Generate ephemeral local auth secret
         run: node -e 'process.stdout.write("NEXTAUTH_SECRET=" + require("node:crypto").randomBytes(32).toString("hex") + "\n")' >> "$GITHUB_ENV"
       - name: Build example
