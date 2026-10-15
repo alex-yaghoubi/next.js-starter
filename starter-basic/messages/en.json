@@ -62,9 +62,9 @@
   "Workspace": {
     "eyebrow": "YOUR PLAYGROUND",
     "title": "A workspace you can actually use.",
-    "description": "Create and organize tasks, experiment with components, and see how a real client-side feature is structured.",
+    "description": "Keep your work moving: search, prioritize, sort, and manage tasks in a real interactive workspace.",
     "guideLink": "Developer guide",
-    "demoDisclaimer": "This is a local demo, not a shared cloud workspace. Your tasks never leave this browser.",
+    "demoDisclaimer": "Your tasks stay in this browser, not in the cloud. Use Export backup to take a copy with you.",
     "total": "All tasks",
     "totalHint": "In this workspace",
     "active": "In progress",

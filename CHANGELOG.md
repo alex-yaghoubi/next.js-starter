@@ -19,6 +19,8 @@ Significant source changes are recorded here. A version listed as
   multi-page navigation and reusable visual components.
 - Added a functional, bilingual, local-first task workspace with task creation,
   inline editing, completion, deletion, filtering, progress and persistence.
+- Extend the working demo with three task priorities, instant search, sorting,
+  backward-compatible local records and versioned JSON backup/restore.
 - Added a practical developer guide and user-friendly loading, 404 and error states.
 - Responsive landing page with a practical getting-started section.
 - Tailwind CSS 3, TypeScript, `next-intl`, and `next-themes`.

@@ -75,7 +75,8 @@ review, and your own API.
 - **Light/dark toggle**, respecting system preferences via `next-themes`
 - **Polished product-style homepage** with responsive navigation and bilingual content
 - **Working task workspace** with add/edit/complete/delete, filters,
-  progress tracking and browser-local persistence
+  progress tracking, three priority levels, search and sorting,
+  browser-local persistence, and JSON backup/restore
 - **Developer guide**, graceful empty/error/404 states and loading feedback
 - No app-specific fonts, branding, appointment APIs, shared secrets, Docker
   registry, or deployment provider required

@@ -18,7 +18,9 @@ No database, credentials, `.env` file or external API is needed.
 
 - `/en` and `/fa` — redesigned responsive landing pages
 - `/en/workspace` and `/fa/workspace` — working task management demo:
-  create, edit, complete, filter, and remove tasks. Progress updates live.
+  create, edit, complete, search, filter, sort and prioritize tasks.
+  Progress updates live. Download a JSON backup or restore an earlier export.
+  Existing local tasks automatically receive a normal priority.
 - `/en/guide` and `/fa/guide` — developer onboarding with key file locations
 - Local demo data is stored in the browser's `localStorage`. No accounts,
   APIs, secrets, or database are required. This is **not cloud sync**.
@@ -27,6 +29,18 @@ No database, credentials, `.env` file or external API is needed.
 
 The first visit seeds a few example tasks. Delete them and add your own, or
 replace the demo with your real product's data layer when you're ready.
+
+### Your local workspace data
+
+Tasks are private to this browser and are **not synchronized across devices**.
+Use **Export backup** to save a versioned `starter-workspace-backup.json`
+file. Use **Import backup** to restore it on the same or another device.
+Restoring data replaces the current task list **only after confirmation**.
+A corrupted local record is left untouched rather than silently overwritten.
+
+Task priorities and search are designed for real use, while the sample storage
+adapter in `lib/tasks.ts` is intentionally small enough to replace with your
+own database when your application needs user accounts.
 
 ## Make it yours
 

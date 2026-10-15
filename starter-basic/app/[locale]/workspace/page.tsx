@@ -22,7 +22,7 @@ export default async function WorkspacePage({params}: Props) {
         <Link href="/guide" className="button-secondary">{t("guideLink")} ↗</Link>
       </div>
       <TaskBoard />
-      <p className="mt-7 text-center text-xs text-slate-500 dark:text-slate-400">
+      <p className="mx-auto mt-7 max-w-2xl text-center text-xs leading-6 text-slate-500 dark:text-slate-400">
         {t("demoDisclaimer")}
       </p>
     </div>
