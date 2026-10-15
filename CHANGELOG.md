@@ -13,12 +13,14 @@ Significant source changes are recorded here. A version listed as
 
 ### New basic template
 
+- Next.js 15.5 patched baseline and React 19.1.8+ for new projects.
 - Next.js App Router with English/Persian routes and RTL-aware layout.
 - Responsive landing page with a practical getting-started section.
 - Tailwind CSS 3, TypeScript, `next-intl`, and `next-themes`.
 - No backend, database, auth provider, environment variable, or third-party
   font dependency required to run the basic template.
 - Expanded CLI checks verifying template selection and output files.
+- Manual GitHub Action checks real HTTP responses from /en and /fa after a build.
 
 ### Additional hardening originally prepared for 1.3.5
 

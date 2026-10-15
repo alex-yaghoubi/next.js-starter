@@ -5,7 +5,7 @@
 [![MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 **Go from zero to a usable Next.js application in one command.**
-The new default starter includes **Next.js 15, React 19, TypeScript, Tailwind CSS,
+The new default starter includes **Next.js 15.5 (security-patched), React 19, TypeScript, Tailwind CSS,
 English/Persian routing, RTL support and dark mode**, without requiring a
 database, an API key or an authentication provider.
 
@@ -116,7 +116,7 @@ npm run build
 ```
 
 A **manual-only**, opt-in GitHub Actions workflow supports source, packaged
-CLI and basic-template validation. It does **not** block commits, PRs,
+CLI, basic-template build, and real HTTP smoke tests for English/Persian pages. It does **not** block commits, PRs,
 deployment or publication; tests are not claimed to pass until actually run.
 
 **Security:** see [SECURITY.md](SECURITY.md).

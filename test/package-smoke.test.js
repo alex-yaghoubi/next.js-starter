@@ -269,6 +269,8 @@ test("default scaffold is a zero-config multilingual Next.js app", (t) => {
   assert.equal(pkg.dependencies["next-auth"], undefined);
   assert.equal(pkg.dependencies["next-intl"], "^4.0.2");
   assert.equal(pkg.dependencies["next-themes"], "^0.4.6");
+  assert.equal(pkg.dependencies.next, "^15.5.28");
+  assert.equal(pkg.dependencies.react, "^19.1.8");
 });
 
 test("basic template does not ship Octavia application services or licensed fonts", () => {
@@ -289,4 +291,14 @@ test("English and Persian landing messages have matching translation keys", () =
     fs.readFileSync(path.resolve(root, "starter-basic", "app", "[locale]", "layout.tsx"), "utf8"),
     /locale === "fa" \? "rtl" : "ltr"/
   );
+});
+
+
+test("basic template uses security-patched compatible Next.js and React baselines", () => {
+  const starter = JSON.parse(fs.readFileSync(path.join(root, "starter-basic", "package.json"), "utf8"));
+  assert.equal(starter.dependencies.next, "^15.5.28");
+  assert.equal(starter.dependencies.react, "^19.1.8");
+  assert.equal(starter.dependencies["react-dom"], "^19.1.8");
+  assert.ok(!fs.existsSync(path.join(root, "starter-basic", "package-lock.json")),
+    "a stale lockfile must not downgrade the security baseline");
 });

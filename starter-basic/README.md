@@ -1,6 +1,6 @@
 # Your Next.js application
 
-A clean, lightweight Next.js 15 starter with TypeScript, Tailwind CSS 3, `next-intl` (English and Persian) and a working light/dark theme.
+A clean, lightweight Next.js 15.5 starter with TypeScript, Tailwind CSS 3, `next-intl` (English and Persian) and a working light/dark theme.
 
 ## Run
 

@@ -12,7 +12,8 @@ do **not** automatically publish or update the version on npm.
 3. Confirm `npm ci`, `npm test`, `npm pack --dry-run`, and the
    **default basic template** `npm run typecheck` and `npm run build` pass.
    The new default template is a breaking change and requires a
-   **2.0.0 major-version release**.
+   **2.0.0 major-version release**. Also verify that both /en and /fa
+   return localized HTML with the correct direction (LTR/RTL).
 4. Review all bundled files with `npm pack --dry-run --json`; avoid shipping
    secrets, internal endpoints, or organization-specific deployment configs.
 5. Verify rights to redistribute any third-party fonts and other assets

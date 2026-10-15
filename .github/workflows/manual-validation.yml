@@ -66,6 +66,25 @@ jobs:
       - name: Build Next.js basic starter
         working-directory: starter-basic
         run: npm run build
+      - name: Run localized pages and verify English, Persian and RTL
+        working-directory: starter-basic
+        shell: bash
+        run: |
+          npm run start -- --port 3100 > /tmp/nextjs-starter-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 45); do
+            if curl --silent --fail http://127.0.0.1:3100/en > /tmp/starter-en.html; then break; fi
+            sleep 2
+          done
+          curl --fail --silent --show-error http://127.0.0.1:3100/fa > /tmp/starter-fa.html
+          grep -q 'lang="en"' /tmp/starter-en.html
+          grep -q 'dir="ltr"' /tmp/starter-en.html
+          grep -q 'lang="fa"' /tmp/starter-fa.html
+          grep -q 'dir="rtl"' /tmp/starter-fa.html
+          grep -q 'Build something great' /tmp/starter-en.html
+          grep -q 'ایده' /tmp/starter-fa.html
+          echo "Localized HTTP smoke test passed"
 
   appointment-build:
     name: Optional legacy Appointment template build
