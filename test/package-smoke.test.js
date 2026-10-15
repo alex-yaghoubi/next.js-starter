@@ -18,8 +18,10 @@ test("npm exposes the expected CLI command", () => {
   assert.ok(fs.existsSync(path.join(templateDir, "package.json")), "starter template should exist");
 
   const source = fs.readFileSync(binPath, "utf8");
-  assert.ok(source.includes('"starter-basic"'));
-  assert.ok(source.includes('"starter-template"'));
+  assert.match(source, /require\("\.\.\/lib\/scaffold"\)/);
+  const options = fs.readFileSync(path.join(root, "lib", "project-options.js"), "utf8");
+  assert.ok(options.includes('"starter-basic"'));
+  assert.ok(options.includes('"starter-template"'));
 });
 
 test("npm tarball includes both the CLI and the starter template", () => {
@@ -32,6 +34,8 @@ test("npm tarball includes both the CLI and the starter template", () => {
   const files = new Set(metadata[0].files.map((item) => item.path));
 
   assert.ok(files.has("bin/create-nextjs-standard-app.js"), "CLI missing from package");
+  assert.ok(files.has("lib/scaffold.js"), "core scaffolding module missing from npm tarball");
+  assert.ok(files.has("lib/project-options.js"), "CLI options module missing from npm tarball");
   assert.ok(files.has("starter-template/package.json"), "template missing from package");
   assert.ok(files.has("starter-basic/package.json"), "basic starter missing from npm package");
   assert.ok(files.has("starter-basic/messages/fa.json"), "basic localization missing");
@@ -307,4 +311,68 @@ test("optional appointment template uses system fonts and bundles no font binari
   assert.doesNotMatch(tailwind, /Octavia-EN|YekanBakh.*-Ubitex/);
   const fonts = path.join(templateDir, "assets", "fonts");
   assert.ok(!fs.existsSync(fonts) || fs.readdirSync(fonts).length === 0);
+});
+
+
+test("core modules expose independent options and scaffolding interfaces", () => {
+  const core = require("../lib/scaffold");
+  const opts = require("../lib/project-options");
+  assert.equal(typeof core.scaffoldProject, "function");
+  assert.equal(typeof core.installDependencies, "function");
+  assert.equal(typeof core.initializeRepository, "function");
+  assert.equal(opts.validateOptions({name: "hello-app"}).template, "basic");
+  assert.equal(opts.getInstallCommand("pnpm").command, "pnpm");
+});
+
+test("project name validation rejects traversal and unsafe Windows device names", () => {
+  const {validateProjectName} = require("../lib/project-options");
+  for (const name of ["../foo", ".", "..", "-bad", "CON", "aux.txt", "some/path", "a..\\b"]) {
+    assert.throws(() => validateProjectName(name), name);
+  }
+  assert.equal(validateProjectName("My-App_1"), "My-App_1");
+});
+
+test("bad options are rejected without filesystem side effects", async (t) => {
+  const {scaffoldProject} = require("../lib/scaffold");
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-bad-options-"));
+  t.after(() => fs.rmSync(rootDir, {recursive: true, force: true}));
+  await assert.rejects(scaffoldProject({name: "valid-name", template: "missing"}, rootDir));
+  await assert.rejects(scaffoldProject({name: "valid-name", packageManager: "oops"}, rootDir));
+  assert.deepEqual(fs.readdirSync(rootDir), []);
+});
+
+test("failed copy cleans up only the newly-reserved directory", async (t) => {
+  const {scaffoldProject} = require("../lib/scaffold");
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-copy-failure-"));
+  t.after(() => fs.rmSync(rootDir, {recursive: true, force: true}));
+  const fsPromises = require("node:fs/promises");
+  const fakeFs = {
+    mkdir: (...args) => fsPromises.mkdir(...args),
+    cp: async () => { throw new Error("simulated copy failure"); }
+  };
+  await assert.rejects(scaffoldProject({name: "broken-app"}, rootDir, fakeFs), /simulated/);
+  assert.ok(!fs.existsSync(path.join(rootDir, "broken-app")));
+});
+
+test("dependency installation errors preserve generated files", async (t) => {
+  const {scaffoldProject, installDependencies} = require("../lib/scaffold");
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-install-failure-"));
+  t.after(() => fs.rmSync(rootDir, {recursive: true, force: true}));
+  const project = await scaffoldProject({name: "recoverable-app"}, rootDir);
+  assert.throws(
+    () => installDependencies(project, () => { throw new Error("network unavailable"); }),
+    /Retry with "npm install"/
+  );
+  assert.ok(fs.existsSync(path.join(project.targetDir, "package.json")));
+});
+
+test("scaffolded projects always ignore build output and secrets", async (t) => {
+  const {scaffoldProject, REQUIRED_IGNORE_LINES} = require("../lib/scaffold");
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-ignore-check-"));
+  t.after(() => fs.rmSync(rootDir, {recursive: true, force: true}));
+  const project = await scaffoldProject({name: "ignored-app"}, rootDir);
+  const gitignore = fs.readFileSync(path.join(project.targetDir, ".gitignore"), "utf8").split(/\r?\n/);
+  for (const line of REQUIRED_IGNORE_LINES) {
+    assert.ok(gitignore.includes(line), "Missing ignore rule: " + line);
+  }
 });
