@@ -35,6 +35,12 @@ Skip automatic Git initialization:
 npx create-nextjs-standard-app my-project --no-git
 ```
 
+Create the starter files without immediately installing dependencies:
+
+```bash
+npx create-nextjs-standard-app my-project --skip-install --no-git
+```
+
 For the complete options list, run `npx create-nextjs-standard-app --help`.
 
 > This repository contains the source for the npm package. Changes on GitHub do not change the already-published npm version until a new release is published.
@@ -69,6 +75,14 @@ For the complete options list, run `npx create-nextjs-standard-app --help`.
 - [App Router + SSR + Edge-ready]
 
 ---
+
+## 🔐 Security and backend configuration
+
+- Each newly generated project gets its **own random authentication secret** in a git-ignored `.env.local` file.
+- A checked-in `.env.example` lists the supported variables but contains **no shared authentication secret**.
+- The example appointment and authentication flows require an API you control. Configure `APPOINTMENT_API_BASE_URL` before using those examples.
+- No production Octavia backend is configured by default. The examples are **not production-ready authentication or payment integrations**.
+- Review the generated project's `README.md` before deploying.
 
 ## 🧪 Development and packaging checks
 
