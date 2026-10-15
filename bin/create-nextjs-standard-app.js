@@ -19,6 +19,11 @@ const argv = yargs
     type: "boolean",
     default: true,
   })
+  .option("skip-install", {
+    describe: "Create project files without installing dependencies",
+    type: "boolean",
+    default: false,
+  })
   .help().argv;
 
 const projectName = argv._[0];
@@ -30,6 +35,11 @@ const projectName = argv._[0];
   if (!projectName) {
     console.error(chalk.red("❌ Please provide a project name:"));
     console.error(chalk.cyan("    npx create-nextjs-standard-app my-project"));
+    process.exit(1);
+  }
+
+  if (typeof projectName !== "string" || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(projectName) || projectName === "." || projectName === "..") {
+    console.error(chalk.red("❌ Use a simple directory name with letters, numbers, dots, dashes, or underscores."));
     process.exit(1);
   }
 
@@ -90,8 +100,12 @@ const projectName = argv._[0];
       process.exit(1);
     }
 
-    execSync(installCmd, { stdio: "inherit", cwd: targetDir });
-    spinner.succeed(chalk.green("📦 Dependencies installed."));
+    if (argv["skip-install"]) {
+      spinner.info("Dependency installation skipped. Run your package manager in the new project.");
+    } else {
+      execSync(installCmd, { stdio: "inherit", cwd: targetDir });
+      spinner.succeed(chalk.green("📦 Dependencies installed."));
+    }
 
     // Initialize git (optional)
     if (argv.git) {
