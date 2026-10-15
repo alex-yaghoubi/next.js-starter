@@ -1,0 +1,51 @@
+name: Manual package validation
+
+# Deliberately manual-only: not a required check and does not block commits or deployment.
+on:
+  workflow_dispatch:
+    inputs:
+      build_template:
+        description: Also install and build the generated Next.js template
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  cli-smoke:
+    name: CLI smoke tests / package contents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install CLI dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Run CLI tests
+        run: npm test
+      - name: Inspect npm package
+        run: npm pack --dry-run
+
+  template-build:
+    name: Optional Next.js template build
+    if: inputs.build_template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install template dependencies
+        working-directory: starter-template
+        run: npm ci --no-audit --no-fund
+      - name: Generate ephemeral test secret
+        run: node -e 'process.stdout.write("NEXTAUTH_SECRET=" + require("node:crypto").randomBytes(32).toString("hex") + "\n")' >> "$GITHUB_ENV"
+      - name: Build Next.js starter
+        working-directory: starter-template
+        env:
+          NEXTAUTH_URL: http://localhost:3000
+        run: npm run build
