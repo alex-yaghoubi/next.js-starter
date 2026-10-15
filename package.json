@@ -1,11 +1,11 @@
 {
   "name": "create-nextjs-standard-app",
-  "version": "1.3.5",
+  "version": "2.0.0",
   "bin": {
     "create-nextjs-standard-app": "./bin/create-nextjs-standard-app.js",
     "create-nextjs-app": "./bin/create-nextjs-standard-app.js"
   },
-  "description": "CLI to scaffold Next.js, TypeScript, Tailwind CSS, i18n, and RTL-ready apps",
+  "description": "One-command Next.js starter with TypeScript, Tailwind, English/Persian i18n, and dark mode",
   "author": "Alex Yaghoubi",
   "keywords": [
     "nextjs",
@@ -41,6 +41,7 @@
   },
   "files": [
     "bin",
+    "starter-basic",
     "starter-template"
   ]
 }

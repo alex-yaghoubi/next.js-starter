@@ -27,6 +27,12 @@ const argv = yargs
     type: "boolean",
     default: false,
   })
+  .option("template", {
+    describe: "Scaffold a clean app (basic) or the legacy appointment example",
+    type: "string",
+    choices: ["basic", "appointment"],
+    default: "basic",
+  })
   .strictOptions()
   .help().argv;
 
@@ -49,7 +55,9 @@ async function run() {
     throw new Error('Unsupported package manager "' + pm + '". Choose npm, yarn, or pnpm.');
   }
 
-  const sourceDir = path.resolve(__dirname, "..", "starter-template");
+  const sourceDir = path.resolve(
+    __dirname, "..", argv.template === "appointment" ? "starter-template" : "starter-basic"
+  );
   const targetDir = path.join(process.cwd(), name);
   await fs.access(path.join(sourceDir, "package.json"));
 
@@ -76,10 +84,15 @@ async function run() {
 
     const lockPath = path.join(targetDir, "package-lock.json");
     if (pm === "npm") {
-      const lock = JSON.parse(await fs.readFile(lockPath, "utf8"));
-      lock.name = pkg.name;
-      lock.packages[""].name = pkg.name;
-      await fs.writeFile(lockPath, JSON.stringify(lock, null, 2) + "\n");
+      // The basic starter intentionally has no lockfile. npm install creates one.
+      try {
+        const lock = JSON.parse(await fs.readFile(lockPath, "utf8"));
+        lock.name = pkg.name;
+        lock.packages[""].name = pkg.name;
+        await fs.writeFile(lockPath, JSON.stringify(lock, null, 2) + "\n");
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
     } else {
       // Do not impose npm's lockfile on yarn/pnpm consumers.
       await fs.rm(lockPath, { force: true });
@@ -101,12 +114,15 @@ async function run() {
       );
     }
 
-    const secret = randomBytes(32).toString("base64url");
-    await fs.writeFile(
-      path.join(targetDir, ".env.local"),
-      "NEXTAUTH_SECRET=" + secret + "\nNEXTAUTH_URL=http://localhost:3000\n",
-      { flag: "wx", mode: 0o600 }
-    );
+    if (argv.template === "appointment") {
+      // Only the optional Auth.js example requires authentication credentials.
+      const secret = randomBytes(32).toString("base64url");
+      await fs.writeFile(
+        path.join(targetDir, ".env.local"),
+        "NEXTAUTH_SECRET=" + secret + "\nNEXTAUTH_URL=http://localhost:3000\n",
+        { flag: "wx", mode: 0o600 }
+      );
+    }
 
     spinner.succeed('Project "' + name + '" created.');
   } catch (error) {

@@ -18,7 +18,8 @@ test("npm exposes the expected CLI command", () => {
   assert.ok(fs.existsSync(path.join(templateDir, "package.json")), "starter template should exist");
 
   const source = fs.readFileSync(binPath, "utf8");
-  assert.match(source, /path\.join\(__dirname,\s*"\.\.",\s*"starter-template"\)/);
+  assert.ok(source.includes('"starter-basic"'));
+  assert.ok(source.includes('"starter-template"'));
 });
 
 test("npm tarball includes both the CLI and the starter template", () => {
@@ -32,6 +33,8 @@ test("npm tarball includes both the CLI and the starter template", () => {
 
   assert.ok(files.has("bin/create-nextjs-standard-app.js"), "CLI missing from package");
   assert.ok(files.has("starter-template/package.json"), "template missing from package");
+  assert.ok(files.has("starter-basic/package.json"), "basic starter missing from npm package");
+  assert.ok(files.has("starter-basic/messages/fa.json"), "basic localization missing");
   assert.ok(!files.has("starter-template/.env"), "shared .env must not ship");
 });
 
@@ -42,7 +45,7 @@ test("CLI generates a complete project without installing dependencies", (t) => 
 
   execFileSync(
     process.execPath,
-    [binPath, "sample-app", "--skip-install", "--no-git"],
+    [binPath, "sample-app", "--template", "appointment", "--skip-install", "--no-git"],
     { cwd: sandbox, encoding: "utf8", timeout: 30000 }
   );
 
@@ -96,7 +99,7 @@ test("two generated projects receive distinct authentication secrets", (t) => {
   t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
 
   for (const name of ["alpha-app", "beta-app"]) {
-    execFileSync(process.execPath, [binPath, name, "--skip-install", "--no-git"], {
+    execFileSync(process.execPath, [binPath, name, "--template", "appointment", "--skip-install", "--no-git"], {
       cwd: sandbox,
       encoding: "utf8",
       timeout: 30000,
@@ -137,7 +140,7 @@ test("verification never assumes that the backend returns a plaintext password",
 test("scaffolded npm project has the requested package name and lockfile", (t) => {
   const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-names-"));
   t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
-  execFileSync(process.execPath, [binPath, "MySample", "--skip-install", "--no-git"], {
+  execFileSync(process.execPath, [binPath, "MySample", "--template", "appointment", "--skip-install", "--no-git"], {
     cwd: sandbox, encoding: "utf8", timeout: 30000,
   });
   const dir = path.join(sandbox, "MySample");
@@ -238,4 +241,47 @@ test("sample API routes are explicit non-operational stubs", () => {
     assert.match(source, /export async function GET/);
     assert.match(source, /status: 501/);
   }
+});
+
+
+test("default scaffold is a zero-config multilingual Next.js app", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-basic-default-"));
+  t.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+  execFileSync(process.execPath, [binPath, "my-app", "--skip-install", "--no-git"], {
+    cwd: sandbox, encoding: "utf8", timeout: 30000
+  });
+  const app = path.join(sandbox, "my-app");
+  const pkg = JSON.parse(fs.readFileSync(path.join(app, "package.json"), "utf8"));
+  assert.equal(pkg.name, "my-app");
+  assert.ok(fs.existsSync(path.join(app, "app", "[locale]", "page.tsx")));
+  assert.ok(fs.existsSync(path.join(app, "app", "[locale]", "layout.tsx")));
+  assert.ok(fs.existsSync(path.join(app, "messages", "en.json")));
+  assert.ok(fs.existsSync(path.join(app, "messages", "fa.json")));
+  assert.ok(fs.existsSync(path.join(app, "middleware.ts")));
+  assert.ok(fs.existsSync(path.join(app, ".gitignore")));
+  assert.ok(!fs.existsSync(path.join(app, ".env.local")), "basic apps should not need Auth.js secrets");
+  assert.ok(!fs.existsSync(path.join(app, "package-lock.json")), "npm creates its own fresh lockfile");
+  assert.equal(pkg.dependencies["next-auth"], undefined);
+  assert.equal(pkg.dependencies["next-intl"], "^4.0.2");
+  assert.equal(pkg.dependencies["next-themes"], "^0.4.6");
+});
+
+test("basic template does not ship Octavia application services or licensed fonts", () => {
+  const base = path.resolve(root, "starter-basic");
+  const paths = ["lib/auth.ts", "actions/auth.ts", "assets/fonts", ".env", ".env.local"];
+  for (const rel of paths) assert.ok(!fs.existsSync(path.join(base, rel)), rel);
+  assert.ok(!fs.readFileSync(path.join(base, "app", "[locale]", "page.tsx"), "utf8").includes("api.octavia.ir"));
+});
+
+test("English and Persian landing messages have matching translation keys", () => {
+  const messagesDir = path.resolve(root, "starter-basic", "messages");
+  const en = JSON.parse(fs.readFileSync(path.join(messagesDir, "en.json"), "utf8"));
+  const fa = JSON.parse(fs.readFileSync(path.join(messagesDir, "fa.json"), "utf8"));
+  for (const section of Object.keys(en)) {
+    assert.deepEqual(Object.keys(en[section]).sort(), Object.keys(fa[section]).sort(), section);
+  }
+  assert.match(
+    fs.readFileSync(path.resolve(root, "starter-basic", "app", "[locale]", "layout.tsx"), "utf8"),
+    /locale === "fa" \? "rtl" : "ltr"/
+  );
 });
