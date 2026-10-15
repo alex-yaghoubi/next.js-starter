@@ -1,22 +1,24 @@
 #!/usr/bin/env node
 
-const fs = require("fs").promises;
-const path = require("path");
-const { randomBytes } = require("crypto");
-const { execSync } = require("child_process");
+const fs = require("node:fs").promises;
+const path = require("node:path");
+const { randomBytes } = require("node:crypto");
+const { execFileSync } = require("node:child_process");
 const ora = require("ora");
 const chalk = require("chalk");
 const yargs = require("yargs");
 
 const argv = yargs
+  .scriptName("create-nextjs-standard-app")
+  .usage("$0 <project-name> [options]")
   .option("package-manager", {
     alias: "pm",
-    describe: "Choose package manager (npm, yarn, pnpm)",
+    describe: "Package manager for dependency installation (npm, yarn, pnpm)",
     type: "string",
     default: "npm",
   })
   .option("git", {
-    describe: "Initialize a git repository",
+    describe: "Initialize a Git repository",
     type: "boolean",
     default: true,
   })
@@ -25,119 +27,109 @@ const argv = yargs
     type: "boolean",
     default: false,
   })
+  .strictOptions()
   .help().argv;
 
-const projectName = argv._[0];
+const name = String(argv._[0] ?? "");
+const pm = argv["package-manager"];
+const packageManagers = {
+  npm: ["npm", ["install"]],
+  yarn: ["yarn", ["install"]],
+  pnpm: ["pnpm", ["install"]],
+};
 
-(async () => {
-  const spinner = ora();
-
-  // Validate project name
-  if (!projectName) {
-    console.error(chalk.red("❌ Please provide a project name:"));
-    console.error(chalk.cyan("    npx create-nextjs-standard-app my-project"));
-    process.exit(1);
+async function run() {
+  if (argv._.length !== 1 || !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(name) ||
+      name === "." || name === ".." || name.endsWith(".")) {
+    throw new Error("Provide one project name using letters, numbers, dots, dashes, or underscores.");
   }
 
-  if (typeof projectName !== "string" || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(projectName) || projectName === "." || projectName === "..") {
-    console.error(chalk.red("❌ Use a simple directory name with letters, numbers, dots, dashes, or underscores."));
-    process.exit(1);
+  // Validate options before writing any files.
+  if (!Object.hasOwn(packageManagers, pm)) {
+    throw new Error('Unsupported package manager "' + pm + '". Choose npm, yarn, or pnpm.');
   }
 
-  const sourceDir = path.join(__dirname, "..", "starter-template");
-  const targetDir = path.join(process.cwd(), projectName);
+  const sourceDir = path.resolve(__dirname, "..", "starter-template");
+  const targetDir = path.join(process.cwd(), name);
+  await fs.access(path.join(sourceDir, "package.json"));
 
   try {
-    // Check if template exists
-    spinner.start("Checking project template...");
-    const sourceExists = await fs
-      .access(sourceDir)
-      .then(() => true)
-      .catch(() => false);
-    if (!sourceExists) {
-      spinner.fail();
-      console.error(
-        chalk.red("❌ Starter template not found. Check the package structure.")
-      );
-      process.exit(1);
+    await fs.access(targetDir);
+    throw new Error('Directory "' + name + '" already exists. Choose a new name.');
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const spinner = ora("Creating project...").start();
+  try {
+    await fs.cp(sourceDir, targetDir, {
+      recursive: true,
+      force: false,
+      errorOnExist: true,
+    });
+
+    // Use the requested name rather than leaving the template's generic name.
+    const packagePath = path.join(targetDir, "package.json");
+    const pkg = JSON.parse(await fs.readFile(packagePath, "utf8"));
+    pkg.name = name.toLowerCase();
+    await fs.writeFile(packagePath, JSON.stringify(pkg, null, 2) + "\n");
+
+    const lockPath = path.join(targetDir, "package-lock.json");
+    if (pm === "npm") {
+      const lock = JSON.parse(await fs.readFile(lockPath, "utf8"));
+      lock.name = pkg.name;
+      lock.packages[""].name = pkg.name;
+      await fs.writeFile(lockPath, JSON.stringify(lock, null, 2) + "\n");
+    } else {
+      // Do not impose npm's lockfile on yarn/pnpm consumers.
+      await fs.rm(lockPath, { force: true });
     }
-    spinner.succeed();
 
-    // Check if target directory exists
-    spinner.start("Checking destination...");
-    const targetExists = await fs
-      .access(targetDir)
-      .then(() => true)
-      .catch(() => false);
-    if (targetExists) {
-      spinner.fail();
-      console.error(
-        chalk.red(
-          `❌ Directory "${projectName}" already exists. Choose a different name.`
-        )
-      );
-      process.exit(1);
-    }
-    spinner.succeed();
-
-    // Copy project files
-    spinner.start("Copying project files...");
-    await fs.cp(sourceDir, targetDir, { recursive: true });
-
-    // Every generated app receives its own strong authentication secret.
-    // .env.local is ignored by the starter's .gitignore.
-    const envFile = path.join(targetDir, ".env.local");
-    const authSecret = randomBytes(32).toString("base64url");
+    const secret = randomBytes(32).toString("base64url");
     await fs.writeFile(
-      envFile,
-      `NEXTAUTH_SECRET=${authSecret}\nNEXTAUTH_URL=http://localhost:3000\n`,
+      path.join(targetDir, ".env.local"),
+      "NEXTAUTH_SECRET=" + secret + "\nNEXTAUTH_URL=http://localhost:3000\n",
       { flag: "wx", mode: 0o600 }
     );
 
-    spinner.succeed(chalk.green(`✅ Project "${projectName}" created.`));
-    console.log(chalk.cyan(`📁 Path: ${targetDir}`));
-
-    // Install dependencies
-    spinner.start("Installing dependencies...");
-    const pm = argv["package-manager"];
-    const installCmd = {
-      npm: "npm install",
-      yarn: "yarn",
-      pnpm: "pnpm install",
-    }[pm];
-
-    if (!installCmd) {
-      spinner.fail();
-      console.error(chalk.red(`❌ Package manager "${pm}" is not supported.`));
-      process.exit(1);
-    }
-
-    if (argv["skip-install"]) {
-      spinner.info("Dependency installation skipped. Run your package manager in the new project.");
-    } else {
-      execSync(installCmd, { stdio: "inherit", cwd: targetDir });
-      spinner.succeed(chalk.green("📦 Dependencies installed."));
-    }
-
-    // Initialize git (optional)
-    if (argv.git) {
-      spinner.start("Initializing git repository...");
-      try {
-        execSync("git init", { stdio: "ignore", cwd: targetDir });
-        spinner.succeed(chalk.green("🌿 Git repository initialized."));
-      } catch (error) {
-        spinner.warn(chalk.yellow("⚠️ Failed to initialize git. Skipping..."));
-      }
-    }
-
-    // Final instructions
-    console.log(chalk.bold.green("\n🚀 Project is ready! Get started with:"));
-    console.log(chalk.cyan(`    cd ${projectName}`));
-    console.log(chalk.cyan(`    ${pm} run dev`));
+    spinner.succeed('Project "' + name + '" created.');
   } catch (error) {
-    spinner.fail();
-    console.error(chalk.red("❌ An error occurred:"));
-    console.error(chalk.red(error.message));
-    process.exit(1);
+    spinner.fail("Could not scaffold the project.");
+    throw error;
   }
-})();
+
+  if (argv["skip-install"]) {
+    console.log(chalk.yellow("Skipped dependency installation."));
+  } else {
+    console.log(chalk.cyan("Installing dependencies with " + pm + "..."));
+    try {
+      const [command, args] = packageManagers[pm];
+      execFileSync(command, args, { stdio: "inherit", cwd: targetDir });
+    } catch (error) {
+      // Preserve project files to enable recovery without clobbering user content.
+      throw new Error(
+        "Dependency installation failed. Project files remain at " + targetDir +
+        '. Run "' + pm + ' install" in that directory to retry. ' + error.message
+      );
+    }
+  }
+
+  if (argv.git) {
+    try {
+      execFileSync("git", ["init"], { stdio: "ignore", cwd: targetDir });
+      console.log(chalk.green("Initialized Git repository."));
+    } catch {
+      console.warn(chalk.yellow("Git initialization skipped (git not available)."));
+    }
+  }
+
+  console.log(chalk.green("\nYour starter is ready:"));
+  console.log("  cd " + name);
+  if (argv["skip-install"]) console.log("  " + pm + " install");
+  console.log("  " + pm + " run dev");
+}
+
+run().catch((error) => {
+  console.error(chalk.red(error.message));
+  process.exitCode = 1;
+});

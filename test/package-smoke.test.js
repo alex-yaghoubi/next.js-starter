@@ -130,3 +130,59 @@ test("verification never assumes that the backend returns a plaintext password",
   assert.doesNotMatch(actions, /response\.data\.data\.user\.password/);
   assert.match(actions, /process\.env\.APPOINTMENT_API_BASE_URL/);
 });
+
+
+test("scaffolded npm project has the requested package name and lockfile", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-names-"));
+  t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
+  execFileSync(process.execPath, [binPath, "MySample", "--skip-install", "--no-git"], {
+    cwd: sandbox, encoding: "utf8", timeout: 30000,
+  });
+  const dir = path.join(sandbox, "MySample");
+  const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8"));
+  const lock = JSON.parse(fs.readFileSync(path.join(dir, "package-lock.json"), "utf8"));
+  assert.equal(pkg.name, "mysample");
+  assert.equal(lock.name, pkg.name);
+  assert.equal(lock.packages[""].name, pkg.name);
+  assert.deepEqual(lock.packages[""].dependencies, pkg.dependencies);
+});
+
+test("yarn consumers do not inherit npm lockfile", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-yarn-"));
+  t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
+  execFileSync(process.execPath,
+    [binPath, "yarn-project", "--pm", "yarn", "--skip-install", "--no-git"],
+    { cwd: sandbox, encoding: "utf8", timeout: 30000 });
+  assert.ok(fs.existsSync(path.join(sandbox, "yarn-project", "package.json")));
+  assert.ok(!fs.existsSync(path.join(sandbox, "yarn-project", "package-lock.json")));
+});
+
+test("invalid package manager never creates a directory", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-invalidpm-"));
+  t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
+  assert.throws(() => execFileSync(process.execPath,
+    [binPath, "bad-pm", "--pm", "unknown", "--skip-install", "--no-git"],
+    { cwd: sandbox, encoding: "utf8", stdio: "pipe", timeout: 30000 }));
+  assert.ok(!fs.existsSync(path.join(sandbox, "bad-pm")));
+});
+
+test("an existing directory is never overwritten", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-existing-"));
+  t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
+  const target = path.join(sandbox, "existing-app");
+  fs.mkdirSync(target);
+  fs.writeFileSync(path.join(target, "important.txt"), "untouched");
+  assert.throws(() => execFileSync(process.execPath,
+    [binPath, "existing-app", "--skip-install", "--no-git"],
+    { cwd: sandbox, encoding: "utf8", stdio: "pipe", timeout: 30000 }));
+  assert.equal(fs.readFileSync(path.join(target, "important.txt"), "utf8"), "untouched");
+});
+
+test("template pins compatible Next.js and React majors", () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
+  const lock = JSON.parse(fs.readFileSync(path.join(templateDir, "package-lock.json"), "utf8"));
+  assert.equal(pkg.dependencies.next, "^15.3.0");
+  assert.equal(pkg.dependencies.react, "^19.1.0");
+  assert.equal(pkg.dependencies["react-dom"], "^19.1.0");
+  assert.equal(lock.packages[""].dependencies.next, pkg.dependencies.next);
+});
