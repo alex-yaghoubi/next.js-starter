@@ -82,6 +82,21 @@ async function run() {
     pkg.name = name.toLowerCase();
     await fs.writeFile(packagePath, JSON.stringify(pkg, null, 2) + "\n");
 
+    // The clean template is branded automatically with the supplied project name.
+    if (argv.template === "basic") {
+      const displayName = name
+        .replace(/[-_.]+/g, " ")
+        .replace(/\\b[a-z]/g, (letter) => letter.toUpperCase())
+        .trim();
+      for (const locale of ["en", "fa"]) {
+        const messagePath = path.join(targetDir, "messages", locale + ".json");
+        const messages = JSON.parse(await fs.readFile(messagePath, "utf8"));
+        messages.Metadata.title = displayName;
+        messages.Navigation.brand = displayName;
+        await fs.writeFile(messagePath, JSON.stringify(messages, null, 2) + "\n");
+      }
+    }
+
     const lockPath = path.join(targetDir, "package-lock.json");
     if (pm === "npm") {
       // The basic starter intentionally has no lockfile. npm install creates one.

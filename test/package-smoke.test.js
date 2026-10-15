@@ -253,6 +253,11 @@ test("default scaffold is a zero-config multilingual Next.js app", (t) => {
   const app = path.join(sandbox, "my-app");
   const pkg = JSON.parse(fs.readFileSync(path.join(app, "package.json"), "utf8"));
   assert.equal(pkg.name, "my-app");
+  for (const locale of ["en", "fa"]) {
+    const messages = JSON.parse(fs.readFileSync(path.join(app, "messages", locale + ".json"), "utf8"));
+    assert.equal(messages.Metadata.title, "My App");
+    assert.equal(messages.Navigation.brand, "My App");
+  }
   assert.ok(fs.existsSync(path.join(app, "app", "[locale]", "page.tsx")));
   assert.ok(fs.existsSync(path.join(app, "app", "[locale]", "layout.tsx")));
   assert.ok(fs.existsSync(path.join(app, "messages", "en.json")));

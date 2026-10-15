@@ -14,11 +14,11 @@ No database, credentials, `.env` file or external API is needed.
 
 ## Make it yours
 
-1. Edit `app/[locale]/page.tsx` to replace the starter home page.
-2. Edit `messages/en.json` and `messages/fa.json` to change copy.
-3. Edit `app/[locale]/layout.tsx` to change the site header/footer.
-4. Edit `app/globals.css` and `tailwind.config.ts` to change the look.
-5. Add new routes under `app/[locale]/` and use `next-intl`'s navigation helpers.
+1. Your project name is already reflected in the website title and header.\n2. Edit `app/[locale]/page.tsx` to replace the starter home page.
+3. Edit `messages/en.json` and `messages/fa.json` to change copy.
+4. Edit `app/[locale]/layout.tsx` to change the site header/footer.
+5. Edit `app/globals.css` and `tailwind.config.ts` to change the look.
+6. Add new routes under `app/[locale]/` and use `next-intl`'s navigation helpers.
 
 ## Commands
 

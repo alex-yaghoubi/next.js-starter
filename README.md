@@ -97,7 +97,7 @@ with run, typecheck, build, localization, and theme instructions.
 | `--help` | Display available options |
 
 The generator refuses to overwrite an existing folder and personalizes
-the generated `package.json` name. With the Appointment template, it also
+the generated `package.json` name **and the basic app's visible title/brand**. With the Appointment template, it also
 creates a unique `NEXTAUTH_SECRET` in a git-ignored `.env.local`. The
 default Basic template does **not** create or require an auth secret.
 
