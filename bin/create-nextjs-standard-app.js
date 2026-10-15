@@ -85,6 +85,22 @@ async function run() {
       await fs.rm(lockPath, { force: true });
     }
 
+    // npm packaging tools may omit the template's .gitignore: enforce secret safety
+    // in the generated project even when the packaged template lacks that file.
+    const gitignorePath = path.join(targetDir, ".gitignore");
+    let gitignore = "";
+    try {
+      gitignore = await fs.readFile(gitignorePath, "utf8");
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    if (!gitignore.includes(".env.*")) {
+      await fs.appendFile(
+        gitignorePath,
+        "\nnode_modules/\n.next/\n.env\n.env.*\n!.env.example\n"
+      );
+    }
+
     const secret = randomBytes(32).toString("base64url");
     await fs.writeFile(
       path.join(targetDir, ".env.local"),

@@ -32,6 +32,7 @@ test("npm tarball includes both the CLI and the starter template", () => {
 
   assert.ok(files.has("bin/create-nextjs-standard-app.js"), "CLI missing from package");
   assert.ok(files.has("starter-template/package.json"), "template missing from package");
+  assert.ok(!files.has("starter-template/.env"), "shared .env must not ship");
 });
 
 
@@ -53,6 +54,7 @@ test("CLI generates a complete project without installing dependencies", (t) => 
   assert.ok(!fs.existsSync(path.join(generated, "node_modules")));
   assert.ok(!fs.existsSync(path.join(generated, ".git")));
   assert.ok(!fs.existsSync(path.join(generated, ".env")), "no shared secret may ship as .env");
+  assert.ok(fs.existsSync(path.join(generated, ".gitignore")), "generated app must ignore secrets");
   const envLocal = fs.readFileSync(path.join(generated, ".env.local"), "utf8");
   const secret = envLocal.match(/^NEXTAUTH_SECRET=(.+)$/m)?.[1];
   assert.ok(secret && secret.length >= 40, "a strong unique auth secret must be generated");
