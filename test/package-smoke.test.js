@@ -376,3 +376,31 @@ test("scaffolded projects always ignore build output and secrets", async (t) => 
     assert.ok(gitignore.includes(line), "Missing ignore rule: " + line);
   }
 });
+
+
+test("numeric directory names from yargs are converted to valid project names", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-numeric-project-"));
+  t.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+  execFileSync(process.execPath, [binPath, "2026", "--skip-install", "--no-git"], {
+    cwd: sandbox, timeout: 30000, encoding: "utf8",
+  });
+  assert.ok(fs.existsSync(path.join(sandbox, "2026", "package.json")));
+});
+
+test("starter layouts reuse presentational components and localized controls", () => {
+  const dir = path.join(root, "starter-basic");
+  const layout = fs.readFileSync(path.join(dir, "app", "[locale]", "layout.tsx"), "utf8");
+  const home = fs.readFileSync(path.join(dir, "app", "[locale]", "page.tsx"), "utf8");
+  assert.match(layout, /<SiteHeader/);
+  assert.match(layout, /<SiteFooter/);
+  assert.match(home, /<FeatureCard/);
+  for (const locale of ["en", "fa"]) {
+    const messages = JSON.parse(fs.readFileSync(path.join(dir, "messages", locale + ".json"), "utf8"));
+    assert.ok(messages.Navigation.skipToContent);
+    assert.ok(messages.Navigation.navigationLabel);
+    assert.ok(messages.Controls.switchToLight);
+    assert.ok(messages.Controls.switchToDark);
+    assert.ok(messages.Controls.switchToEnglish);
+    assert.ok(messages.Controls.switchToPersian);
+  }
+});

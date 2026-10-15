@@ -49,7 +49,7 @@ async function main() {
   let project;
   try {
     project = await scaffoldProject({
-      name: argv._[0],
+      name: String(argv._[0]),
       template: argv.template,
       packageManager: argv["package-manager"],
       skipInstall: argv["skip-install"],

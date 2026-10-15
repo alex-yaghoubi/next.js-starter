@@ -5,7 +5,9 @@
   },
   "Navigation": {
     "brand": "Your App",
-    "footer": "Built for what's next."
+    "footer": "Built for what's next.",
+    "navigationLabel": "App settings",
+    "skipToContent": "Skip to main content"
   },
   "Home": {
     "eyebrow": "Your project is ready",
@@ -26,5 +28,12 @@
     "backHome": "Home",
     "commandTitle": "Start editing these files",
     "tip": "Your changes appear automatically during npm run dev."
+  },
+  "Controls": {
+    "switchToEnglish": "Switch to English",
+    "switchToPersian": "Switch to Persian",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme",
+    "themeLabel": "Change color theme"
   }
 }

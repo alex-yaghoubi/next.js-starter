@@ -24,6 +24,10 @@ Significant source changes are recorded here. A version listed as
 - Remove the obsolete pinned Appointment lockfile and use patched Next.js/React
   minimums so new installs do not inherit insecure dependency snapshots.
 - Expanded CLI checks verifying template selection and output files.
+- Split CLI into dedicated validation and scaffolding modules, with safe rollback
+  if copying fails and recovery instructions if installation fails.
+- Extract reusable header, footer and feature cards; localize accessible controls
+  and add a skip-to-content link.
 - Manual GitHub Action checks real HTTP responses from /en and /fa after a build.
 
 ### Additional hardening originally prepared for 1.3.5

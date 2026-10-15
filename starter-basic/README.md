@@ -17,9 +17,18 @@ No database, credentials, `.env` file or external API is needed.
 1. Your project name is already reflected in the website title and header.
 2. Edit `app/[locale]/page.tsx` to replace the starter home page.
 3. Edit `messages/en.json` and `messages/fa.json` to change copy.
-4. Edit `app/[locale]/layout.tsx` to change the site header/footer.
+4. Edit `components/SiteHeader.tsx` and `components/SiteFooter.tsx` to update navigation and footer.
 5. Edit `app/globals.css` and `tailwind.config.ts` to change the look.
-6. Add new routes under `app/[locale]/` and use `next-intl`'s navigation helpers.
+6. Reuse `components/FeatureCard.tsx` for feature listings.
+7. Add new routes under `app/[locale]/` and use `next-intl`'s navigation helpers.
+
+## Project structure
+
+- `app/[locale]/` — localized routes and layout
+- `components/` — reusable presentation and theme/language controls
+- `messages/` — translated copy, metadata and accessibility labels
+- `i18n/` — locale routing, navigation and request configuration
+- `app/globals.css` — Tailwind styling
 
 ## Commands
 

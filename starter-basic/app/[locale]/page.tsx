@@ -1,5 +1,6 @@
 import {getTranslations, setRequestLocale} from "next-intl/server";
 import {Link} from "@/i18n/navigation";
+import FeatureCard from "@/components/FeatureCard";
 
 type Props = {params: Promise<{locale: string}>};
 
@@ -39,11 +40,7 @@ export default async function Home({params}: Props) {
 
       <section className="grid gap-4 md:grid-cols-3" aria-label={t("featuresLabel")}>
         {features.map((feature) => (
-          <article key={feature.title} className="surface p-6">
-            <span className="text-3xl" aria-hidden>{feature.symbol}</span>
-            <h2 className="mt-5 text-lg font-bold">{feature.title}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{feature.detail}</p>
-          </article>
+          <FeatureCard key={feature.title} {...feature} />
         ))}
       </section>
 

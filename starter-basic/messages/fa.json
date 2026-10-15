@@ -5,7 +5,9 @@
   },
   "Navigation": {
     "brand": "برنامه شما",
-    "footer": "آماده برای ایده بعدی شما."
+    "footer": "آماده برای ایده بعدی شما.",
+    "navigationLabel": "تنظیمات برنامه",
+    "skipToContent": "رفتن به محتوای اصلی"
   },
   "Home": {
     "eyebrow": "پروژه شما آماده است",
@@ -26,5 +28,12 @@
     "backHome": "خانه",
     "commandTitle": "ویرایش را از این فایل‌ها شروع کن",
     "tip": "با اجرای npm run dev تغییرات را فوری می‌بینی."
+  },
+  "Controls": {
+    "switchToEnglish": "تغییر زبان به انگلیسی",
+    "switchToPersian": "تغییر زبان به فارسی",
+    "switchToLight": "تغییر به حالت روشن",
+    "switchToDark": "تغییر به حالت تاریک",
+    "themeLabel": "تغییر ظاهر برنامه"
   }
 }
