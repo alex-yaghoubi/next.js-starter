@@ -1,0 +1,16 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# OS and debug
+.DS_Store
+*.log
+.vercel/

@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "title": "Your Next.js App",
+    "description": "A clean, multilingual Next.js starter built with TypeScript and Tailwind CSS."
+  },
+  "Navigation": {
+    "brand": "Your App",
+    "footer": "Built for what's next."
+  },
+  "Home": {
+    "eyebrow": "Your project is ready",
+    "headline": "Build something great.",
+    "description": "Your Next.js starter is running. It includes TypeScript, Tailwind CSS, language switching, and light/dark mode — without accounts or configuration.",
+    "startButton": "Explore the starter",
+    "docsButton": "Next.js docs",
+    "featuresLabel": "Starter features",
+    "featureSpeedTitle": "Modern foundation",
+    "featureSpeedText": "Next.js App Router, TypeScript, and Tailwind CSS with a small, understandable codebase.",
+    "featureI18nTitle": "English + فارسی",
+    "featureI18nText": "Real localized routes and translations, including right-to-left layouts.",
+    "featureThemeTitle": "Light and dark",
+    "featureThemeText": "A working color theme toggle with system preference support.",
+    "nextStepLabel": "Make it yours",
+    "nextStepTitle": "Your first edits",
+    "nextStepText": "Replace this page, update the app name, and add your own routes and components. No API keys or external service required.",
+    "backHome": "Home",
+    "commandTitle": "Start editing these files",
+    "tip": "Your changes appear automatically during npm run dev."
+  }
+}

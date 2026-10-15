@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "title": "برنامه جدید شما",
+    "description": "قالب ساده و چندزبانه Next.js با تایپ‌اسکریپت و Tailwind CSS."
+  },
+  "Navigation": {
+    "brand": "برنامه شما",
+    "footer": "آماده برای ایده بعدی شما."
+  },
+  "Home": {
+    "eyebrow": "پروژه شما آماده است",
+    "headline": "ایده‌ات را بساز.",
+    "description": "پروژه Next.js آماده اجراست؛ با تایپ‌اسکریپت، Tailwind CSS، تغییر زبان و حالت تاریک و روشن، بدون نیاز به حساب کاربری یا تنظیمات پیچیده.",
+    "startButton": "شروع کار",
+    "docsButton": "مستندات Next.js",
+    "featuresLabel": "ویژگی‌های قالب",
+    "featureSpeedTitle": "پایه مدرن",
+    "featureSpeedText": "Next.js App Router، تایپ‌اسکریپت و Tailwind CSS با ساختار کد ساده و قابل توسعه.",
+    "featureI18nTitle": "فارسی + English",
+    "featureI18nText": "مسیرها و ترجمه‌های واقعی چندزبانه با پشتیبانی از راست‌به‌چپ.",
+    "featureThemeTitle": "روشن و تاریک",
+    "featureThemeText": "کلید تغییر ظاهر همراه با تشخیص تنظیمات سیستم.",
+    "nextStepLabel": "شخصی‌سازی",
+    "nextStepTitle": "اولین تغییرات",
+    "nextStepText": "این صفحه و نام برنامه را تغییر بده، مسیرهای تازه بساز و کامپوننت‌هایت را اضافه کن. به کلید API یا سرویس خارجی نیاز نیست.",
+    "backHome": "خانه",
+    "commandTitle": "ویرایش را از این فایل‌ها شروع کن",
+    "tip": "با اجرای npm run dev تغییرات را فوری می‌بینی."
+  }
+}
