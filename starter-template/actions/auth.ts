@@ -22,6 +22,10 @@ export async function checkPhoneAction(phoneNumber: string) {
     return { error: "شماره موبایل معتبر نیست" };
   }
 
+  if (!process.env.APPOINTMENT_API_BASE_URL) {
+    return { error: "Configure APPOINTMENT_API_BASE_URL to use the example appointment backend." };
+  }
+
   try {
     const { data } = await axios.post(USERS_CHECK_PHONE_NUMBER, {
       phoneNumber,
@@ -183,18 +187,14 @@ export async function verifySignupAction(phoneNumber: string, code: string) {
   }
 
   try {
-    const response = await axios.post(USERS_VERIFY, {
+    await axios.post(USERS_VERIFY, {
       identifier: phoneNumber,
       verificationCode: code,
     });
 
-    await signIn("credentials", {
-      phoneNumber,
-      password: response.data.data.user.password, // فرض می‌کنیم API رمز را برمی‌گرداند
-      redirect: false,
-    });
-
-    return { redirect: "/dashboard" };
+    // Never expect a backend to return a user's plaintext password.
+    // After verification, let the user authenticate through the normal sign-in flow.
+    return { redirect: "/auth/phone" };
   } catch (error: any) {
     return {
       error: error.response?.data?.message || "خطای سرور در تأیید",
