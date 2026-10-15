@@ -33,7 +33,7 @@ const projectName = argv._[0];
     process.exit(1);
   }
 
-  const sourceDir = path.join(__dirname, "starter-template");
+  const sourceDir = path.join(__dirname, "..", "starter-template");
   const targetDir = path.join(process.cwd(), projectName);
 
   try {
