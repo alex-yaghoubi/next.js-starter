@@ -115,3 +115,18 @@ test("template cannot silently point at the Octavia production API", () => {
   assert.ok(!config.includes("https://api.octavia.ir"));
   assert.ok(!fs.existsSync(path.join(templateDir, ".env")));
 });
+
+
+test("Auth.js route exports proper handlers", () => {
+  const authRoute = fs.readFileSync(
+    path.join(templateDir, "app", "api", "auth", "[...nextauth]", "route.ts"), "utf8"
+  );
+  assert.match(authRoute, /export const \{ GET, POST \} = handlers;/);
+  assert.doesNotMatch(authRoute, /export \{ handlers as GET/);
+});
+
+test("verification never assumes that the backend returns a plaintext password", () => {
+  const actions = fs.readFileSync(path.join(templateDir, "actions", "auth.ts"), "utf8");
+  assert.doesNotMatch(actions, /response\.data\.data\.user\.password/);
+  assert.match(actions, /process\.env\.APPOINTMENT_API_BASE_URL/);
+});
