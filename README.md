@@ -10,7 +10,7 @@ authentication/appointment screens.
 
 [npm package](https://www.npmjs.com/package/create-nextjs-standard-app) ·
 [GitHub source](https://github.com/alex-yaghoubi/next.js-starter) ·
-[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Releasing](RELEASING.md)
 
 > **Release status:** The fixes and new CLI options in `main` are development
 > changes intended for the **next npm release**. Until that version is published,

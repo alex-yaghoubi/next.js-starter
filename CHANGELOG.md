@@ -16,6 +16,9 @@ Significant source changes are recorded here. A version listed as
 - Pin compatible Next.js and React major versions in the starter template.
 - Replace private deployment assumptions with a public Node Docker example.
 - Provide a neutral default homepage and remove unused React 18-only table dependencies.
+- Replace the stale navigation, copyright and translations with starter-friendly defaults.
+- Use Next.js 15 async route search parameters in example auth pages; make unfinished API endpoints return 501.
+- Correct App Router's nested auth layout so it does not emit a second document root.
 
 ### Security
 
@@ -28,6 +31,7 @@ Significant source changes are recorded here. A version listed as
 
 - Add CLI, tarball, configuration, and regression smoke tests.
 - Add a manual-only validation workflow and open-source project documentation.
+- Document a release checklist and tarball consumer verification step.
 
 ## Published releases
 

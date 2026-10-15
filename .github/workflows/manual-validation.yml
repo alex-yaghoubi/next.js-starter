@@ -29,6 +29,17 @@ jobs:
         run: npm test
       - name: Inspect npm package
         run: npm pack --dry-run
+      - name: Smoke-test installed tarball as a new consumer
+        run: |
+          archive=$(npm pack --silent)
+          consumer=$(mktemp -d)
+          npm install --prefix "$consumer" "$GITHUB_WORKSPACE/$archive" --ignore-scripts --no-audit --no-fund
+          cd "$consumer"
+          ./node_modules/.bin/create-nextjs-standard-app sample-consumer --skip-install --no-git
+          test -f sample-consumer/package.json
+          test -f sample-consumer/.env.local
+          test -f sample-consumer/.gitignore
+
 
   template-build:
     name: Optional Next.js template build
