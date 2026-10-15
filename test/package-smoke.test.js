@@ -220,3 +220,22 @@ test("starter uses valid nested auth layout and only present navigation routes",
     assert.ok(!JSON.stringify(messages).includes("Octavia"));
   }
 });
+
+
+test("Next.js 15 auth pages use awaited searchParams", () => {
+  for (const name of ["phone", "password", "signup", "verify-login", "verify-signup"]) {
+    const page = fs.readFileSync(path.join(templateDir, "app", "auth", name, "page.tsx"), "utf8");
+    assert.match(page, /searchParams: Promise<\{/);
+    assert.match(page, /await searchParams/);
+    assert.doesNotMatch(page, /searchParams\.(phone|error)/);
+    assert.doesNotMatch(page, /redirect\("\/dashboard"\)/);
+  }
+});
+
+test("sample API routes are explicit non-operational stubs", () => {
+  for (const name of ["appointments", "clients", "professionals"]) {
+    const source = fs.readFileSync(path.join(templateDir, "app", "api", name, "route.ts"), "utf8");
+    assert.match(source, /export async function GET/);
+    assert.match(source, /status: 501/);
+  }
+});

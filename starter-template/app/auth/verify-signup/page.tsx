@@ -5,14 +5,15 @@ import VerifySignupForm from "./verify-signup-form";
 export default async function VerifySignupPage({
   searchParams,
 }: {
-  searchParams: { phone?: string; error?: string };
+  searchParams: Promise<{ phone?: string; error?: string }>;
 }) {
+  const params = await searchParams;
   const session = await auth();
   if (session) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
-  const phoneNumber = searchParams.phone;
+  const phoneNumber = params.phone;
   if (!phoneNumber) {
     redirect("/auth/phone");
   }
@@ -20,7 +21,7 @@ export default async function VerifySignupPage({
   return (
     <VerifySignupForm
       phoneNumber={phoneNumber}
-      initialError={searchParams.error}
+      initialError={params.error}
     />
   );
 }

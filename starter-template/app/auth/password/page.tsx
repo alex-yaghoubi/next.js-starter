@@ -5,19 +5,20 @@ import PasswordForm from "./password-form";
 export default async function PasswordPage({
   searchParams,
 }: {
-  searchParams: { phone?: string; error?: string };
+  searchParams: Promise<{ phone?: string; error?: string }>;
 }) {
+  const params = await searchParams;
   const session = await auth();
   if (session) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
-  const phoneNumber = searchParams.phone;
+  const phoneNumber = params.phone;
   if (!phoneNumber) {
     redirect("/auth/phone");
   }
 
   return (
-    <PasswordForm phoneNumber={phoneNumber} initialError={searchParams.error} />
+    <PasswordForm phoneNumber={phoneNumber} initialError={params.error} />
   );
 }

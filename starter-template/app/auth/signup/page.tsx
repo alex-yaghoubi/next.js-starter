@@ -5,19 +5,20 @@ import SignupForm from "./signup-form";
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: { phone?: string; error?: string };
+  searchParams: Promise<{ phone?: string; error?: string }>;
 }) {
+  const params = await searchParams;
   const session = await auth();
   if (session) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
-  const phoneNumber = searchParams.phone;
+  const phoneNumber = params.phone;
   if (!phoneNumber) {
     redirect("/auth/phone");
   }
 
   return (
-    <SignupForm phoneNumber={phoneNumber} initialError={searchParams.error} />
+    <SignupForm phoneNumber={phoneNumber} initialError={params.error} />
   );
 }

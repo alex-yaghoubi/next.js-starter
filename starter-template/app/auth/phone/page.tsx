@@ -5,12 +5,13 @@ import PhoneForm from "./phone-form";
 export default async function PhonePage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }) {
+  const params = await searchParams;
   const session = await auth();
   if (session) {
-    redirect("/dashboard");
+    redirect("/");
   }
 
-  return <PhoneForm initialError={searchParams.error} />;
+  return <PhoneForm initialError={params.error} />;
 }
