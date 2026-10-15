@@ -1,9 +1,6 @@
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { handlers } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-const nextAuth = NextAuth(authOptions);
-export const { handlers } = nextAuth;
-
-export { handlers as GET, handlers as POST };
+// Auth.js v5 exports individual route functions, not the handlers object itself.
+export const { GET, POST } = handlers;
