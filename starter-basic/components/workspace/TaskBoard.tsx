@@ -19,6 +19,8 @@ export default function TaskBoard() {
   const [storageEnabled, setStorageEnabled] = useState(true);
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState<TaskFilter>("all");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
 
   useEffect(() => {
     const defaults = [t("exampleFirst"), t("exampleSecond"), t("exampleThird")];
@@ -65,6 +67,20 @@ export default function TaskBoard() {
 
   function removeTask(id: string) {
     setTasks((current) => current.filter((task) => task.id !== id));
+  }
+
+  function saveEdit(event: FormEvent<HTMLFormElement>, id: string) {
+    event.preventDefault();
+    const clean = editTitle.trim();
+    if (!clean) return;
+    setTasks((current) => current.map((task) =>
+      task.id === id ? {...task, title: clean.slice(0, 120)} : task
+    ));
+    setEditingId(null);
+  }
+
+  function clearCompleted() {
+    setTasks((current) => current.filter((task) => !task.completed));
   }
 
   if (!ready) {
@@ -136,7 +152,8 @@ export default function TaskBoard() {
         </div>
 
         <div className="p-5 sm:p-7">
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t("filterLabel")}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-2" role="group" aria-label={t("filterLabel")}>
             {(["all", "active", "completed"] as const).map((choice) => (
               <button
                 key={choice}
@@ -150,6 +167,15 @@ export default function TaskBoard() {
                 {t(choice === "all" ? "filterAll" : choice === "active" ? "filterActive" : "filterCompleted")}
               </button>
             ))}
+            </div>
+            <button
+              type="button"
+              onClick={clearCompleted}
+              disabled={completed === 0}
+              className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 transition hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:bg-rose-400/10 dark:hover:text-rose-200"
+            >
+              {t("clearCompleted")}
+            </button>
           </div>
 
           {visibleTasks.length ? (
@@ -163,19 +189,46 @@ export default function TaskBoard() {
                     aria-label={task.completed ? t("markActive", {title: task.title}) : t("markDone", {title: task.title})}
                     className="h-5 w-5 shrink-0 cursor-pointer accent-indigo-600"
                   />
-                  <span dir="auto" className={task.completed
-                    ? "min-w-0 flex-1 break-words text-sm text-slate-400 line-through dark:text-slate-500"
-                    : "min-w-0 flex-1 break-words text-sm font-medium text-slate-800 dark:text-slate-100"}>
-                    {task.title}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeTask(task.id)}
-                    aria-label={t("remove", {title: task.title})}
-                    className="rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 dark:hover:border-rose-400/30 dark:hover:bg-rose-400/10 dark:hover:text-rose-200"
-                  >
-                    {t("delete")}
-                  </button>
+                  {editingId === task.id ? (
+                    <form onSubmit={(event) => saveEdit(event, task.id)} className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                      <label htmlFor={"edit-" + task.id} className="sr-only">{t("editTask", {title: task.title})}</label>
+                      <input
+                        id={"edit-" + task.id}
+                        value={editTitle}
+                        onChange={(event) => setEditTitle(event.target.value)}
+                        onKeyDown={(event) => {if (event.key === "Escape") setEditingId(null);}}
+                        maxLength={120}
+                        autoFocus
+                        className="field min-w-0 flex-1 py-2"
+                      />
+                      <button type="submit" disabled={!editTitle.trim()} className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white disabled:opacity-40">{t("save")}</button>
+                      <button type="button" onClick={() => setEditingId(null)} className="rounded-lg px-3 py-2 text-xs font-bold text-slate-500 dark:text-slate-300">{t("cancel")}</button>
+                    </form>
+                  ) : (
+                    <>
+                      <span dir="auto" className={task.completed
+                        ? "min-w-0 flex-1 break-words text-sm text-slate-400 line-through dark:text-slate-500"
+                        : "min-w-0 flex-1 break-words text-sm font-medium text-slate-800 dark:text-slate-100"}>
+                        {task.title}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {setEditingId(task.id); setEditTitle(task.title);}}
+                        aria-label={t("editTask", {title: task.title})}
+                        className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-700 dark:text-slate-400 dark:hover:bg-indigo-400/10 dark:hover:text-indigo-200"
+                      >
+                        {t("edit")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeTask(task.id)}
+                        aria-label={t("remove", {title: task.title})}
+                        className="rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 dark:hover:border-rose-400/30 dark:hover:bg-rose-400/10 dark:hover:text-rose-200"
+                      >
+                        {t("delete")}
+                      </button>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>

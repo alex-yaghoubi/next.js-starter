@@ -92,7 +92,12 @@
     "loading": "Loading your workspace",
     "exampleFirst": "Customize your brand",
     "exampleSecond": "Explore the components",
-    "exampleThird": "Launch your first feature"
+    "exampleThird": "Launch your first feature",
+    "clearCompleted": "Clear completed",
+    "edit": "Edit",
+    "editTask": "Edit task {title}",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "Guide": {
     "eyebrow": "DEVELOPER GUIDE",

@@ -92,7 +92,12 @@
     "loading": "بارگذاری فضای کار",
     "exampleFirst": "برندت را شخصی‌سازی کن",
     "exampleSecond": "کامپوننت‌ها را بررسی کن",
-    "exampleThird": "اولین قابلیتت را منتشر کن"
+    "exampleThird": "اولین قابلیتت را منتشر کن",
+    "clearCompleted": "پاک‌کردن انجام‌شده‌ها",
+    "edit": "ویرایش",
+    "editTask": "ویرایش کار {title}",
+    "save": "ذخیره",
+    "cancel": "انصراف"
   },
   "Guide": {
     "eyebrow": "راهنمای توسعه",
