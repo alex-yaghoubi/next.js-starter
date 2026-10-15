@@ -1,5 +1,50 @@
-# Octavia Next.js Starter
+# Next.js Standard Starter
 
-Starter project with theme toggle, tailwind, and RTL support.
+A reusable Next.js + TypeScript application template with Tailwind CSS,
+English/Persian translations, RTL support, and example appointment/authentication screens.
 
-Change ports in nginx.conf, Jenkinsfile & Dockerfile
+## Getting started
+
+If this app was created using `create-nextjs-standard-app`, the generator already
+created a private `.env.local` with a randomly generated `NEXTAUTH_SECRET`.
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+## Configuration and security
+
+- `.env.local` is ignored by Git. Do not commit it.
+- `.env.example` documents supported settings without including credentials.
+- `NEXTAUTH_SECRET` must be unique for each deployment. The generator creates
+  one for local development; manually provision a secret for production.
+- `NEXTAUTH_URL` defaults to `http://localhost:3000` in generated apps.
+- `APPOINTMENT_API_BASE_URL` is intentionally unset. Provide the URL of an
+  API **you control** if you want to integrate the example appointment actions.
+  This starter does not default to an Octavia production service.
+
+The appointment endpoints and authentication screens are **integration examples**.
+They require an application-specific backend, authorization checks, and appropriate
+security review before handling real users or payments. Generating a project does
+not configure a production-ready authentication service.
+
+## Included
+
+- Next.js App Router and TypeScript
+- Tailwind CSS and reusable UI components
+- `next-intl` with English and Persian message files
+- RTL-aware direction and a theme switcher
+- Example appointment and authentication flows
+
+## Production checklist
+
+1. Configure backend URLs and production secrets securely.
+2. Review and replace example appointment/authentication logic.
+3. Update app branding and metadata.
+4. Run `npm run build` and confirm application behavior.
+5. Test access controls and data flows with your real backend.
+
+Source and CLI: https://github.com/alex-yaghoubi/next.js-starter
