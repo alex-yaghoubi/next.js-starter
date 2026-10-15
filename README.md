@@ -1,4 +1,11 @@
-# create nextjs standard app ⚡️
+# create-nextjs-standard-app ⚡️
+
+[![npm version](https://img.shields.io/npm/v/create-nextjs-standard-app?label=npm%20version)](https://www.npmjs.com/package/create-nextjs-standard-app)
+[![npm weekly downloads](https://img.shields.io/npm/dw/create-nextjs-standard-app?label=weekly%20downloads)](https://www.npmjs.com/package/create-nextjs-standard-app)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+
+**[View on npm](https://www.npmjs.com/package/create-nextjs-standard-app)** · **[Source on GitHub](https://github.com/alex-yaghoubi/next.js-starter)**
+
 
 A minimal CLI to generate a fully configured **Next.js + Tailwind + i18n** starter project, optimized for scalable appointment systems (health, legal, consulting, etc.).
 
@@ -54,4 +61,4 @@ npm run dev
 
 ## 🛠 Author
 
-Made with ❤️ by [@yaghoubi-mohammad](https://github.com/yaghoubi-mohammad)
+Created by [Alex Yaghoubi](https://github.com/alex-yaghoubi). Published as [`create-nextjs-standard-app`](https://www.npmjs.com/package/create-nextjs-standard-app) on npm.
