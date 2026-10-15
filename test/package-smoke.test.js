@@ -404,3 +404,28 @@ test("starter layouts reuse presentational components and localized controls", (
     assert.ok(messages.Controls.switchToPersian);
   }
 });
+
+
+test("copies each template entry into an exclusively reserved target", async (t) => {
+  const {scaffoldProject} = require("../lib/scaffold");
+  const io = require("node:fs/promises");
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cross-node-copy-"));
+  t.after(() => fs.rmSync(rootDir, {recursive: true, force: true}));
+  const copied = [];
+  const instrumented = {
+    mkdir: (...args) => io.mkdir(...args),
+    cp: async (source, dest, options) => {
+      copied.push({source, dest, options});
+      return io.cp(source, dest, options);
+    },
+  };
+  const project = await scaffoldProject({name: "copyable"}, rootDir, instrumented);
+  assert.ok(copied.length > 3);
+  assert.ok(copied.every(({source, dest, options}) =>
+    source !== path.join(root, "starter-basic") &&
+    path.dirname(dest) === project.targetDir &&
+    options.force === false &&
+    options.errorOnExist === true
+  ));
+  assert.ok(fs.existsSync(path.join(project.targetDir, "app", "[locale]", "page.tsx")));
+});
