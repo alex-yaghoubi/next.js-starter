@@ -65,3 +65,18 @@ test("CLI rejects paths outside the current directory", (t) => {
   ));
   assert.ok(!fs.existsSync(path.join(sandbox, "outside")));
 });
+
+
+test("starter manifest and lockfile stay in sync", () => {
+  const starterPackage = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
+  const starterLock = JSON.parse(fs.readFileSync(path.join(templateDir, "package-lock.json"), "utf8"));
+  const lockedRoot = starterLock.packages[""];
+
+  assert.deepEqual(lockedRoot.dependencies, starterPackage.dependencies);
+  assert.deepEqual(lockedRoot.devDependencies, starterPackage.devDependencies);
+  assert.equal(starterPackage.dependencies["react-table"], undefined,
+    "legacy react-table does not support React 19");
+  assert.equal(starterPackage.dependencies["@types/react-table"], undefined);
+  assert.equal(starterLock.packages["node_modules/react-table"], undefined);
+  assert.equal(starterLock.packages["node_modules/@types/react-table"], undefined);
+});
