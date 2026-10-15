@@ -1,4 +1,6 @@
-const BASE_URL = "https://api.octavia.ir";
+// Only call an appointment backend explicitly configured by the application owner.
+// Never silently send generated-app traffic to an Octavia production service.
+const BASE_URL = process.env.APPOINTMENT_API_BASE_URL || "";
 
 // API Endpoints
 export const GET_TEST_URL = `${BASE_URL}/test`; //GET
