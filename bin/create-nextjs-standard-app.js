@@ -6,10 +6,12 @@ const ora = require("ora");
 const yargs = require("yargs");
 
 const {
+  previewProject,
   scaffoldProject,
   installDependencies,
   initializeRepository,
 } = require("../lib/scaffold");
+const {assertSupportedNodeVersion} = require("../lib/project-options");
 
 const argv = yargs
   .scriptName("create-nextjs-standard-app")
@@ -36,25 +38,51 @@ const argv = yargs
     type: "boolean",
     default: false,
   })
+  .option("dry-run", {
+    describe: "Preview the project configuration without writing files",
+    type: "boolean",
+    default: false,
+  })
   .strictOptions()
   .help()
+  .version(require("../package.json").version)
   .parse();
 
 async function main() {
+  assertSupportedNodeVersion();
+
   if (argv._.length !== 1) {
     throw new Error("Usage: create-nextjs-standard-app <project-name> [options]");
+  }
+
+  const input = {
+    name: String(argv._[0]),
+    template: argv.template,
+    packageManager: argv["package-manager"],
+    skipInstall: argv["skip-install"],
+    initializeGit: argv.git,
+  };
+
+  if (argv["dry-run"]) {
+    const plan = await previewProject(input);
+    console.log(chalk.cyan("Project preview (no files written):"));
+    console.log("  Name:           " + plan.options.name);
+    console.log("  Template:       " + plan.options.template);
+    console.log("  Package manager:" + " " + plan.options.packageManager);
+    console.log("  Destination:    " + plan.targetDir);
+    console.log("  Install:        " + (plan.options.skipInstall ? "skipped" : "enabled"));
+    console.log("  Git:            " + (plan.options.initializeGit ? "enabled" : "disabled"));
+    if (plan.targetExists) {
+      throw new Error('Directory "' + plan.options.name + '" already exists; it will not be overwritten.');
+    }
+    console.log(chalk.green("Ready to create. Run without --dry-run to proceed."));
+    return;
   }
 
   const spinner = ora("Creating project...").start();
   let project;
   try {
-    project = await scaffoldProject({
-      name: String(argv._[0]),
-      template: argv.template,
-      packageManager: argv["package-manager"],
-      skipInstall: argv["skip-install"],
-      initializeGit: argv.git,
-    });
+    project = await scaffoldProject(input);
     spinner.succeed('Created "' + project.options.name + '" (' + project.options.template + ").");
   } catch (error) {
     spinner.fail("Could not create project.");
@@ -89,6 +117,14 @@ async function main() {
     console.log("  " + project.options.packageManager + " install");
   }
   console.log("  " + project.options.packageManager + " run dev");
+  console.log(chalk.cyan("\nOpen: http://localhost:3000"));
+  if (project.options.template === "basic") {
+    console.log("Languages: /en (English) and /fa (Persian / RTL)");
+    console.log("First edit: app/[locale]/page.tsx");
+  } else {
+    console.log(chalk.yellow("Appointment integration requires your own backend configuration."));
+    console.log("Setup guide: README.md in the generated project");
+  }
 }
 
 main().catch((error) => {

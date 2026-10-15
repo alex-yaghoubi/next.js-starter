@@ -53,6 +53,9 @@ npx create-nextjs-standard-app booking-app --template appointment
 # Scaffold without installing packages, or choose pnpm
 npx create-nextjs-standard-app demo --skip-install --no-git
 npx create-nextjs-standard-app demo --pm pnpm
+
+# Preview settings without creating any files
+npx create-nextjs-standard-app demo --template basic --dry-run
 ```
 
 The optional Appointment template is **an integration example, not a
@@ -94,10 +97,11 @@ with run, typecheck, build, localization, and theme instructions.
 | `--template basic\|appointment` | Choose default or legacy starter |
 | `--pm npm\|yarn\|pnpm` | Choose package manager (npm by default) |
 | `--skip-install` | Generate files now, install later |
+| `--dry-run` | Preview template, target folder and install options without creating files |
 | `--no-git` | Skip automatic Git repository initialization |
 | `--help` | Display available options |
 
-The generator refuses to overwrite an existing folder and personalizes
+The generator checks Node.js compatibility and refuses to overwrite an existing folder and personalizes
 the generated `package.json` name **and the basic app's visible title/brand**. With the Appointment template, it also
 creates a unique `NEXTAUTH_SECRET` in a git-ignored `.env.local`. The
 default Basic template does **not** create or require an auth secret.

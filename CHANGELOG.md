@@ -24,6 +24,10 @@ Significant source changes are recorded here. A version listed as
 - Remove 31 unused UI animation/demo components and five dead utility/action
   files from the optional Appointment template. Trim unused runtime packages
   and add the missing Radix Slot dependency required by the shared button.
+- Add a non-destructive `--dry-run` preview and a friendly Node.js 20.9+
+  runtime preflight, plus clear localized startup instructions.
+- Add five regression cases covering preview, version, runtime checks and
+  post-creation guidance.
 - Add an opt-in six-combination compatibility matrix for Node.js 20 and 22
   across npm, pnpm and Yarn; install and build a real generated consumer app.
 - Remove the obsolete pinned Appointment lockfile and use patched Next.js/React

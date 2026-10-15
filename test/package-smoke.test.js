@@ -482,3 +482,57 @@ test("appointment application imports only retained UI primitives", () => {
   scan(path.join(base, "components", "client"));
   scan(path.join(base, "components", "server"));
 });
+
+
+test("CLI --version exposes the package version", () => {
+  const out = execFileSync(process.execPath, [binPath, "--version"], {
+    cwd: root, encoding: "utf8", timeout: 30000
+  }).trim();
+  assert.equal(out, manifest.version);
+});
+
+test("preview is non-destructive and reports the selected template and package manager", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-preview-"));
+  t.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+  const out = execFileSync(process.execPath, [
+    binPath, "preview-only", "--template", "appointment",
+    "--pm", "yarn", "--dry-run", "--no-git"
+  ], {cwd: sandbox, encoding: "utf8", timeout: 30000});
+  assert.match(out, /Template:\s+appointment/);
+  assert.match(out, /Package manager:\s+yarn/);
+  assert.match(out, /no files written/);
+  assert.ok(!fs.existsSync(path.join(sandbox, "preview-only")));
+  assert.deepEqual(fs.readdirSync(sandbox), []);
+});
+
+test("preview reports existing target without modifying it", async (t) => {
+  const {previewProject} = require("../lib/scaffold");
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-preview-existing-"));
+  t.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+  const folder = path.join(sandbox, "already-here");
+  fs.mkdirSync(folder);
+  fs.writeFileSync(path.join(folder, "keep.txt"), "original");
+  const result = await previewProject({name: "already-here"}, sandbox);
+  assert.equal(result.targetExists, true);
+  assert.equal(fs.readFileSync(path.join(folder, "keep.txt"), "utf8"), "original");
+});
+
+test("Node preflight rejects unsupported runtimes with a helpful explanation", () => {
+  const {assertSupportedNodeVersion} = require("../lib/project-options");
+  assert.throws(() => assertSupportedNodeVersion("18.20.8"), /Node\.js 20\.9 or newer/);
+  assert.throws(() => assertSupportedNodeVersion("20.8.1"), /Node\.js 20\.9 or newer/);
+  assert.equal(assertSupportedNodeVersion("20.9.0"), "20.9.0");
+  assert.equal(assertSupportedNodeVersion("22.1.0"), "22.1.0");
+});
+
+test("CLI success output contains exact next steps", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-next-steps-"));
+  t.after(() => fs.rmSync(sandbox, {recursive: true, force: true}));
+  const out = execFileSync(process.execPath, [
+    binPath, "getting-started", "--skip-install", "--no-git"
+  ], {cwd: sandbox, encoding: "utf8", timeout: 30000});
+  assert.match(out, /npm install/);
+  assert.match(out, /npm run dev/);
+  assert.match(out, /http:\/\/localhost:3000/);
+  assert.match(out, /app\/\[locale\]\/page\.tsx/);
+});
