@@ -30,7 +30,8 @@ npm run dev
 ```
 
 Open **http://localhost:3000**. The app redirects to `/en`; switch to
-فارسی to see real RTL routing and translations at `/fa`.
+فارسی for `/fa`. Try `/en/workspace` for a functional local-first task demo,
+or `/en/guide` for a guided tour of the codebase.
 
 That's it. The generator installs your dependencies and initializes Git by
 default. No environment variables, API services or database configuration
@@ -72,7 +73,10 @@ review, and your own API.
   `messages/fa.json`, using `next-intl`
 - **RTL / LTR** page direction driven by the active locale
 - **Light/dark toggle**, respecting system preferences via `next-themes`
-- **A usable starter homepage** and practical editing instructions
+- **Polished product-style homepage** with responsive navigation and bilingual content
+- **Working task workspace** with add/edit/complete/delete, filters,
+  progress tracking and browser-local persistence
+- **Developer guide**, graceful empty/error/404 states and loading feedback
 - No app-specific fonts, branding, appointment APIs, shared secrets, Docker
   registry, or deployment provider required
 
@@ -81,6 +85,8 @@ review, and your own API.
 | Change | File |
 | --- | --- |
 | Replace homepage | `app/[locale]/page.tsx` |
+| Explore the working task example | `components/workspace/TaskBoard.tsx`, `lib/tasks.ts` |
+| Change onboarding instructions | `app/[locale]/guide/page.tsx` |
 | Rename website / metadata | `messages/en.json`, `messages/fa.json` |
 | Change layout and header | `app/[locale]/layout.tsx` |
 | Update colors and styles | `app/globals.css`, `tailwind.config.ts` |

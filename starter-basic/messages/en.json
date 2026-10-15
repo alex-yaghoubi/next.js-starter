@@ -112,5 +112,14 @@
     "commandsTitle": "Useful commands",
     "commandsHint": "Use these commands inside your new project folder. The starter includes a working application as well as a clear place to add your own routes.",
     "workspaceLink": "Explore the demo"
+  },
+  "Errors": {
+    "notFoundTitle": "This page isn't here.",
+    "notFoundDescription": "The link may have moved. Head back to your workspace or the overview.",
+    "unexpectedTitle": "Something didn't load.",
+    "unexpectedDescription": "An unexpected error occurred. You can retry or return to the overview.",
+    "retry": "Try again",
+    "goHome": "Back to overview",
+    "openWorkspace": "Open workspace"
   }
 }

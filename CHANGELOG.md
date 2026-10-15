@@ -15,6 +15,11 @@ Significant source changes are recorded here. A version listed as
 
 - Next.js 15.5 patched baseline and React 19.1.8+ for new projects.
 - Next.js App Router with English/Persian routes and RTL-aware layout.
+- Redesigned landing page with responsive product-style presentation,
+  multi-page navigation and reusable visual components.
+- Added a functional, bilingual, local-first task workspace with task creation,
+  inline editing, completion, deletion, filtering, progress and persistence.
+- Added a practical developer guide and user-friendly loading, 404 and error states.
 - Responsive landing page with a practical getting-started section.
 - Tailwind CSS 3, TypeScript, `next-intl`, and `next-themes`.
 - No backend, database, auth provider, environment variable, or third-party
