@@ -2,6 +2,7 @@
 
 const fs = require("fs").promises;
 const path = require("path");
+const { randomBytes } = require("crypto");
 const { execSync } = require("child_process");
 const ora = require("ora");
 const chalk = require("chalk");
@@ -82,6 +83,17 @@ const projectName = argv._[0];
     // Copy project files
     spinner.start("Copying project files...");
     await fs.cp(sourceDir, targetDir, { recursive: true });
+
+    // Every generated app receives its own strong authentication secret.
+    // .env.local is ignored by the starter's .gitignore.
+    const envFile = path.join(targetDir, ".env.local");
+    const authSecret = randomBytes(32).toString("base64url");
+    await fs.writeFile(
+      envFile,
+      `NEXTAUTH_SECRET=${authSecret}\nNEXTAUTH_URL=http://localhost:3000\n`,
+      { flag: "wx", mode: 0o600 }
+    );
+
     spinner.succeed(chalk.green(`✅ Project "${projectName}" created.`));
     console.log(chalk.cyan(`📁 Path: ${targetDir}`));
 
