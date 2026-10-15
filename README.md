@@ -7,26 +7,37 @@
 **[View on npm](https://www.npmjs.com/package/create-nextjs-standard-app)** · **[Source on GitHub](https://github.com/alex-yaghoubi/next.js-starter)**
 
 
-A minimal CLI to generate a fully configured **Next.js + Tailwind + i18n** starter project, optimized for scalable appointment systems (health, legal, consulting, etc.).
+A reusable CLI for scaffolding **Next.js + Tailwind CSS + TypeScript + i18n** applications, with English/Persian language support and RTL layouts.
+
+**Requirements:** Node.js 20.9+ and npm, yarn, or pnpm.
 
 ## 🚀 Usage
 
-Create a new project with one command:
+Create a new project:
 
 ```bash
 npx create-nextjs-standard-app my-project
-```
-
-It will:
-
-- Copy the starter template into `my-project/`
-- Install all dependencies
-- You can run it instantly with:
-
-```bash
 cd my-project
 npm run dev
 ```
+
+The generator copies its starter template, installs dependencies using your selected package manager, and optionally initializes Git.
+
+Use pnpm instead of npm:
+
+```bash
+npx create-nextjs-standard-app my-project --pm pnpm
+```
+
+Skip automatic Git initialization:
+
+```bash
+npx create-nextjs-standard-app my-project --no-git
+```
+
+For the complete options list, run `npx create-nextjs-standard-app --help`.
+
+> This repository contains the source for the npm package. Changes on GitHub do not change the already-published npm version until a new release is published.
 
 ---
 
@@ -56,6 +67,20 @@ npm run dev
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [App Router + SSR + Edge-ready]
+
+---
+
+## 🧪 Development and packaging checks
+
+```bash
+npm ci
+npm test
+npm pack --dry-run
+```
+
+The smoke tests check the published CLI entrypoint and confirm that the template is included in the npm package.
+
+For issues or contributions, use the [GitHub repository](https://github.com/alex-yaghoubi/next.js-starter).
 
 ---
 
