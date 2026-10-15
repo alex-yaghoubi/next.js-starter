@@ -44,6 +44,17 @@ The optional Appointment example now uses system font stacks instead of
 redistributing proprietary font binaries. Replace these stacks with licensed
 fonts appropriate for your own app if needed.
 
+## Lean component set
+
+The optional Appointment template includes only the seven UI primitives used
+by its sign-in, registration and verification examples: button, card, input,
+password input, OTP input, progress and select. Unused animation/gallery demos,
+empty placeholder actions and their extra dependencies have been removed.
+
+To add more components to your generated project, use your preferred UI
+component generator and install the corresponding packages in that project.
+The auth/API flows remain illustrative, not production-ready.
+
 ## Included
 
 - Next.js App Router and TypeScript

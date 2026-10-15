@@ -429,3 +429,33 @@ test("copies each template entry into an exclusively reserved target", async (t)
   ));
   assert.ok(fs.existsSync(path.join(project.targetDir, "app", "[locale]", "page.tsx")));
 });
+
+
+test("appointment template only ships UI primitives used by the example flows", () => {
+  const uiDir = path.join(templateDir, "components", "ui");
+  const included = fs.readdirSync(uiDir).filter((item) => item.endsWith(".tsx")).sort();
+  const expected = ["button.tsx", "card.tsx", "input-otp.tsx", "input-password.tsx",
+    "input.tsx", "progress.tsx", "select.tsx"].sort();
+  assert.deepEqual(included, expected);
+});
+
+test("appointment dependencies include Radix Slot used by the shared button", () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(templateDir, "package.json"), "utf8"));
+  const button = fs.readFileSync(path.join(templateDir, "components", "ui", "button.tsx"), "utf8");
+  assert.match(button, /@radix-ui\/react-slot/);
+  assert.ok(pkg.dependencies["@radix-ui/react-slot"]);
+  for (const dep of ["@radix-ui/react-dialog", "motion", "next-themes", "react-icons", "tailwindcss-animate"]) {
+    assert.equal(pkg.dependencies[dep], undefined, dep + " is not used by the retained example");
+  }
+});
+
+test("appointment example contains no obsolete placeholder actions or unused network helper", () => {
+  for (const pathName of ["actions/appointments.ts", "actions/profile.ts",
+    "actions/settings.ts", "lib/db.ts", "lib/fetch.ts"]) {
+    assert.ok(!fs.existsSync(path.join(templateDir, pathName)), pathName);
+  }
+  for (const file of ["button.tsx", "card.tsx", "input.tsx", "input-password.tsx",
+    "input-otp.tsx", "progress.tsx", "select.tsx"]) {
+    assert.ok(fs.existsSync(path.join(templateDir, "components", "ui", file)));
+  }
+});

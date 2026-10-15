@@ -21,6 +21,11 @@ Significant source changes are recorded here. A version listed as
   font dependency required to run the basic template.
 - Remove unattributed third-party font binaries from the optional Appointment
   template too; use system font stacks instead.
+- Remove 31 unused UI animation/demo components and five dead utility/action
+  files from the optional Appointment template. Trim unused runtime packages
+  and add the missing Radix Slot dependency required by the shared button.
+- Add an opt-in six-combination compatibility matrix for Node.js 20 and 22
+  across npm, pnpm and Yarn; install and build a real generated consumer app.
 - Remove the obsolete pinned Appointment lockfile and use patched Next.js/React
   minimums so new installs do not inherit insecure dependency snapshots.
 - Expanded CLI checks verifying template selection and output files.
