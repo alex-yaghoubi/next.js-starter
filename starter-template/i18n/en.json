@@ -1,21 +1,16 @@
 {
   "metadata": {
-    "title": "Octavia | Cloud Based Software Solutions",
-    "description": "Empowering businesses with innovative software and blockchain solutions to accelerate growth and unlock new opportunities for a brighter future."
+    "title": "Next.js Starter App",
+    "description": "A customizable Next.js starter with TypeScript, Tailwind CSS and localization."
   },
   "Navbar": {
-    "logoAlt": "Octavia Logo",
-    "logoTitle": "Octavia",
+    "brand": "Starter App",
     "links": {
-      "about": "About",
-      "projects": "Projects",
-      "services": "Services",
-      "contact": "Contact"
+      "home": "Home",
+      "signIn": "Sign in"
     }
   },
   "Footer": {
-    "copyright": "© {year} Octavia - All Rights Reserved",
-    "logoAlt": "Octavia Logo",
-    "logoTitle": "Octavia"
+    "copyright": "© {year} Your App"
   }
 }

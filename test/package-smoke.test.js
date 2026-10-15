@@ -206,3 +206,17 @@ test("template explicitly ignores local credentials in Git and Docker", () => {
   assert.match(gitignore, /^!\.env\.example$/m);
   assert.match(dockerignore, /^\.env\.\*$/m);
 });
+
+
+test("starter uses valid nested auth layout and only present navigation routes", () => {
+  const layout = fs.readFileSync(path.join(templateDir, "app", "auth", "layout.tsx"), "utf8");
+  const nav = fs.readFileSync(path.join(templateDir, "components", "server", "Navbar.tsx"), "utf8");
+  assert.doesNotMatch(layout, /<html\b|<body\b/);
+  assert.doesNotMatch(nav, /href="\/about"|href="\/services"|href="\/projects"|href="\/contact"/);
+  assert.match(nav, /href="\/auth\/phone"/);
+  for (const locale of ["en", "fa"]) {
+    const messages = JSON.parse(fs.readFileSync(path.join(templateDir, "i18n", locale + ".json"), "utf8"));
+    assert.ok(messages.Navbar.links.home && messages.Navbar.links.signIn);
+    assert.ok(!JSON.stringify(messages).includes("Octavia"));
+  }
+});
