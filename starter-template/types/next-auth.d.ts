@@ -1,23 +1,25 @@
-// /types/next-auth.d.ts
-import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+import type { DefaultSession } from "next-auth";
 
+// Types for the sample credentials provider and JWT callbacks.
 declare module "next-auth" {
   interface Session {
-    accessToken?: string;
     user: {
       id: string;
-      name: string;
-      email: string;
-    };
+      phoneNumber?: string;
+      token?: string;
+    } & DefaultSession["user"];
   }
 
-  interface User extends DefaultUser {
-    accessToken?: string;
+  interface User {
+    phoneNumber?: string;
+    token?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    accessToken?: string;
+    id?: string;
+    phoneNumber?: string;
+    token?: string;
   }
 }

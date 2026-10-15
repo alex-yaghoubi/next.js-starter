@@ -186,3 +186,21 @@ test("template pins compatible Next.js and React majors", () => {
   assert.equal(pkg.dependencies["react-dom"], "^19.1.0");
   assert.equal(lock.packages[""].dependencies.next, pkg.dependencies.next);
 });
+
+
+
+test("scaffold never includes a private container registry or mandatory deployment pipeline", () => {
+  const docker = fs.readFileSync(path.join(templateDir, "Dockerfile"), "utf8");
+  assert.match(docker, /FROM node:22-alpine/);
+  assert.doesNotMatch(docker, /octavia\.ir|npm install --force/);
+  assert.ok(!fs.existsSync(path.join(templateDir, "Jenkinsfile")));
+  assert.ok(!fs.existsSync(path.join(templateDir, "nginx.conf")));
+});
+
+test("template explicitly ignores local credentials in Git and Docker", () => {
+  const gitignore = fs.readFileSync(path.join(templateDir, ".gitignore"), "utf8");
+  const dockerignore = fs.readFileSync(path.join(templateDir, ".dockerignore"), "utf8");
+  assert.match(gitignore, /^\.env\.\*$/m);
+  assert.match(gitignore, /^!\.env\.example$/m);
+  assert.match(dockerignore, /^\.env\.\*$/m);
+});

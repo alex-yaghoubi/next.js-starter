@@ -1,40 +1,29 @@
-FROM registry2.octavia.ir/node:lts-alpine AS base
-
-FROM base AS deps
-
-RUN apk add --no-cache libc6-compat
-
+# npm-based standalone Next.js deployment example.
+# Users of yarn or pnpm should adapt the install/build steps to their package manager.
+FROM node:22-alpine AS deps
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
-COPY package.json ./
-
-RUN npm install --force
-
-FROM base AS builder
-
+FROM node:22-alpine AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM base AS runner
-
+FROM node:22-alpine AS runner
 WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-ENV NODE_ENV production
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
+RUN addgroup -S --gid 1001 nodejs && adduser -S --uid 1001 -G nodejs nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-
-EXPOSE 8585
-ENV PORT 8585
-
+EXPOSE 3000
 CMD ["node", "server.js"]

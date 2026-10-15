@@ -45,6 +45,8 @@ not configure a production-ready authentication service.
 2. Review and replace example appointment/authentication logic.
 3. Update app branding and metadata.
 4. Run `npm run build` and confirm application behavior.
+   The provided Dockerfile is an optional **npm-only** standalone Next.js example
+   using public Node images; adjust it if you use yarn or pnpm.
 5. Test access controls and data flows with your real backend.
 
 Source and CLI: https://github.com/alex-yaghoubi/next.js-starter
