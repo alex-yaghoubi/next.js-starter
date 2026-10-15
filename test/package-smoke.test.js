@@ -52,6 +52,13 @@ test("CLI generates a complete project without installing dependencies", (t) => 
   assert.ok(fs.existsSync(path.join(generated, "i18n", "en.json")));
   assert.ok(!fs.existsSync(path.join(generated, "node_modules")));
   assert.ok(!fs.existsSync(path.join(generated, ".git")));
+  assert.ok(!fs.existsSync(path.join(generated, ".env")), "no shared secret may ship as .env");
+  const envLocal = fs.readFileSync(path.join(generated, ".env.local"), "utf8");
+  const secret = envLocal.match(/^NEXTAUTH_SECRET=(.+)$/m)?.[1];
+  assert.ok(secret && secret.length >= 40, "a strong unique auth secret must be generated");
+  assert.match(envLocal, /^NEXTAUTH_URL=http:\/\/localhost:3000$/m);
+  assert.match(fs.readFileSync(path.join(generated, ".gitignore"), "utf8"), /\.env\*\.local/);
+  assert.ok(fs.existsSync(path.join(generated, ".env.example")));
 });
 
 test("CLI rejects paths outside the current directory", (t) => {
@@ -79,4 +86,32 @@ test("starter manifest and lockfile stay in sync", () => {
   assert.equal(starterPackage.dependencies["@types/react-table"], undefined);
   assert.equal(starterLock.packages["node_modules/react-table"], undefined);
   assert.equal(starterLock.packages["node_modules/@types/react-table"], undefined);
+});
+
+
+test("two generated projects receive distinct authentication secrets", (t) => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), "nextjs-cli-secrets-"));
+  t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }));
+
+  for (const name of ["alpha-app", "beta-app"]) {
+    execFileSync(process.execPath, [binPath, name, "--skip-install", "--no-git"], {
+      cwd: sandbox,
+      encoding: "utf8",
+      timeout: 30000,
+    });
+  }
+
+  const getSecret = (name) =>
+    fs.readFileSync(path.join(sandbox, name, ".env.local"), "utf8")
+      .match(/^NEXTAUTH_SECRET=(.+)$/m)?.[1];
+  assert.ok(getSecret("alpha-app"));
+  assert.ok(getSecret("beta-app"));
+  assert.notEqual(getSecret("alpha-app"), getSecret("beta-app"));
+});
+
+test("template cannot silently point at the Octavia production API", () => {
+  const config = fs.readFileSync(path.join(templateDir, "configs", "api.config.ts"), "utf8");
+  assert.ok(config.includes("process.env.APPOINTMENT_API_BASE_URL"));
+  assert.ok(!config.includes("https://api.octavia.ir"));
+  assert.ok(!fs.existsSync(path.join(templateDir, ".env")));
 });
