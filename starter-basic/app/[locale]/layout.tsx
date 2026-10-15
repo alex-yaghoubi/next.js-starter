@@ -29,8 +29,8 @@ export async function generateMetadata({params}: Omit<Props, "children">): Promi
 export default async function LocaleLayout({children, params}: Props) {
   const {locale} = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
-
   setRequestLocale(locale);
+
   const messages = await getMessages();
   const t = await getTranslations({locale, namespace: "Navigation"});
 
@@ -44,6 +44,9 @@ export default async function LocaleLayout({children, params}: Props) {
                 brand={t("brand")}
                 navigationLabel={t("navigationLabel")}
                 skipToContent={t("skipToContent")}
+                homeLabel={t("home")}
+                workspaceLabel={t("workspace")}
+                guideLabel={t("guide")}
               />
               <main id="main-content" className="flex-1">{children}</main>
               <SiteFooter copyright={t("footer")} />
