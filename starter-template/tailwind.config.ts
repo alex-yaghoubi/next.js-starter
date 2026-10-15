@@ -13,10 +13,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: "YekanBakhMedium-Ubitex",
-        // displayBold: "YekanBakhBold-Ubitex",
-        english: ["Octavia-EN", "Octavia-FA"],
-        persian: ["Octavia-FA", "Octavia-EN"],
+        display: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        english: ["system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        persian: ["Tahoma", "Arial", "sans-serif"],
       },
       screens: {
         "3xl": "1680px",

@@ -31,6 +31,12 @@ They require an application-specific backend, authorization checks, and appropri
 security review before handling real users or payments. Generating a project does
 not configure a production-ready authentication service.
 
+## Fonts and redistribution
+
+The optional Appointment example now uses system font stacks instead of
+redistributing proprietary font binaries. Replace these stacks with licensed
+fonts appropriate for your own app if needed.
+
 ## Included
 
 - Next.js App Router and TypeScript

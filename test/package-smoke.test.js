@@ -36,6 +36,8 @@ test("npm tarball includes both the CLI and the starter template", () => {
   assert.ok(files.has("starter-basic/package.json"), "basic starter missing from npm package");
   assert.ok(files.has("starter-basic/messages/fa.json"), "basic localization missing");
   assert.ok(!files.has("starter-template/.env"), "shared .env must not ship");
+  assert.ok(![...files].some((item) => item.startsWith("starter-template/assets/fonts/")),
+    "unlicensed font binaries must not be redistributed");
 });
 
 
@@ -301,4 +303,14 @@ test("basic template uses security-patched compatible Next.js and React baseline
   assert.equal(starter.dependencies["react-dom"], "^19.1.8");
   assert.ok(!fs.existsSync(path.join(root, "starter-basic", "package-lock.json")),
     "a stale lockfile must not downgrade the security baseline");
+});
+
+
+test("optional appointment template uses system fonts and bundles no font binaries", () => {
+  const css = fs.readFileSync(path.join(templateDir, "styles", "globals.css"), "utf8");
+  const tailwind = fs.readFileSync(path.join(templateDir, "tailwind.config.ts"), "utf8");
+  assert.doesNotMatch(css, /@font-face|assets\/fonts|\.woff2/);
+  assert.doesNotMatch(tailwind, /Octavia-EN|YekanBakh.*-Ubitex/);
+  const fonts = path.join(templateDir, "assets", "fonts");
+  assert.ok(!fs.existsSync(fonts) || fs.readdirSync(fonts).length === 0);
 });

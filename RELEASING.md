@@ -16,10 +16,9 @@ do **not** automatically publish or update the version on npm.
    return localized HTML with the correct direction (LTR/RTL).
 4. Review all bundled files with `npm pack --dry-run --json`; avoid shipping
    secrets, internal endpoints, or organization-specific deployment configs.
-5. Verify rights to redistribute any third-party fonts and other assets
-   bundled in the optional `starter-template` Appointment example. The basic
-   template ships no proprietary font assets; MIT licensing of code alone
-   does not grant rights to third-party assets.
+5. Confirm `npm pack --dry-run --json` excludes former third-party font
+   binaries from the optional Appointment template. Review rights to any
+   other assets, and ensure packaged files contain no proprietary material.
 6. Review relevant security advisories and dependency issues.
 7. Confirm the basic template is the default and `--template appointment` remains available.
 8. Update `CHANGELOG.md` from **Unreleased** to the intended version/date.

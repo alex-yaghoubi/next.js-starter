@@ -19,6 +19,8 @@ Significant source changes are recorded here. A version listed as
 - Tailwind CSS 3, TypeScript, `next-intl`, and `next-themes`.
 - No backend, database, auth provider, environment variable, or third-party
   font dependency required to run the basic template.
+- Remove unattributed third-party font binaries from the optional Appointment
+  template too; use system font stacks instead.
 - Expanded CLI checks verifying template selection and output files.
 - Manual GitHub Action checks real HTTP responses from /en and /fa after a build.
 

@@ -2,30 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "YekanBakhBold-Ubitex";
-  src: url("../assets/fonts/inter-var-4-latin.woff2");
-}
-
-@font-face {
-  font-family: "YekanBakhExtraBlack-Ubitex";
-  src: url("../assets/fonts/YekanBakhExtraBlack.woff2");
-}
-
-@font-face {
-  font-family: "YekanBakhMedium-Ubitex";
-  src: url("../assets/fonts/inter-var-4-latin.woff2");
-}
-
-@font-face {
-  font-family: "Octavia-EN";
-  src: url("../assets/fonts/inter-var-4-latin.woff2");
-}
-
-@font-face {
-  font-family: "Octavia-FA";
-  src: url("../assets/fonts/YekanBakhMedium.woff2");
-}
+/* System font stacks keep the published starter free of third-party font binaries. */
 
 ::-webkit-scrollbar {
   width: 5px;
