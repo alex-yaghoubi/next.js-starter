@@ -33,9 +33,9 @@ export function isTask(value: unknown): value is Omit<Task, "priority"> & {prior
 
 function normalizeTasks(value: unknown): Task[] | null {
   if (!Array.isArray(value) || value.length > MAX_TASKS || !value.every(isTask)) return null;
-  const ids = new Set(value.map((task: Task) => task.id));
+  const ids = new Set(value.map((task) => task.id));
   if (ids.size !== value.length) return null;
-  return value.map((task: Task) => ({...task, priority: task.priority ?? "normal"}));
+  return value.map((task): Task => ({...task, priority: task.priority ?? "normal"}));
 }
 
 export function readTasks(raw: string | null): Task[] | null {
